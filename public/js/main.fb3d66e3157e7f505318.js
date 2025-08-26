@@ -1,0 +1,1 @@
+(()=>{"use strict";console.log("collectible-spot theme JavaScript loaded!")})();

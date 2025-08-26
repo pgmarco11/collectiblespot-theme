@@ -1,0 +1,64 @@
+// Category Sections
+.page {
+    .site-main {
+        .page-section {
+            padding: 1rem 5% 0 2.5rem;
+            height: 100%;
+
+            .page-header {
+                .category-breadcrumbs {
+                    font-size: 1rem;
+                    font-weight: bold;
+                    color: $tertiary-color; 
+                    text-align: left;                 
+                    margin-bottom: 1rem;
+
+                    .category a {
+                        background-color: transparent; 
+                        color: $text-color-white;  
+                    }
+            
+                    a {
+                        color: $text-color-black;
+                        background-color: $tertiary-color;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        padding: .2rem .5rem .2rem;
+            
+                        &:hover {                      
+                            color: $text-color-white;
+                        }
+                    }
+    
+                    span + a {
+                        background-color: transparent; 
+                        color: $text-color-white;     
+                        padding: 0; 
+                        
+                        &:hover {                      
+                            color: $text-color-black;
+                        }
+                    }
+            
+                    .separator {
+                        margin: 0 0.4rem;
+                        text-shadow: 1px 1px 0 $text-color-black;
+                        color: $accent-color;
+                        font-size: 1.2rem;
+                    }
+            
+                    .current-category {
+                        color: $text-color-white;
+                    }
+                }
+                .page-title {
+                    text-align: left;
+                    color: $text-color-white;
+                    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+                    letter-spacing: 0.2rem;
+                }
+
+            }  
+        }
+    }
+}

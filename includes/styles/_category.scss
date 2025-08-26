@@ -1,0 +1,197 @@
+// Category Sections
+.category {
+    .site-main {
+        .body-section {
+            padding: 1rem 5% 0 2.5rem;
+            height: 100%;
+
+            .page-header {
+                .page-title {
+                    text-align: left;
+                    color: $text-color-white;
+                    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+                    letter-spacing: 0.2rem;
+                    margin-bottom: 2.5rem;
+                }            
+                .archive-description {
+                    margin-bottom: 0.5rem;
+                }            
+                .category-breadcrumbs {
+                    font-size: 1rem;
+                    font-weight: bold;
+                    color: $text-color-white; 
+                    text-align: left;                 
+                    margin-bottom: 1rem;
+            
+                    a {
+                        color: $text-color-black;
+                        background-color: $tertiary-color;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        padding: .2rem .5rem .2rem;
+            
+                        &:hover {                      
+                            color: $text-color-white;
+                        }
+                    }
+
+                    span + a {
+                        background-color: transparent; 
+                        color: $text-color-white;     
+                        padding: 0; 
+                        
+                        &:hover {                      
+                            color: $text-color-black;
+                        }
+                    }
+            
+                    .separator {
+                        margin: 0 0.4rem;
+                        text-shadow: 1px 1px 0 $text-color-black;
+                        color: $accent-color;
+                        font-size: 1.2rem;
+                    }
+            
+                    .current-category {
+                        color: $text-color-white;
+                    }
+                }
+            }            
+    
+            .archive-posts {
+                nav  {
+                    .nav-links {
+                        font-family: $font-heading;
+                        font-size: x-large;
+
+                        a, .page-numbers {
+                            color: $text-color-white;
+                            font-weight: 600;
+                            padding: 0 .4rem;
+                            text-decoration: none;
+                            letter-spacing: .1rem;
+                          
+                            &:hover,
+                            &:active {
+                              color: $tertiary-color;
+                            }
+                        }
+                        .page-numbers.current {
+                            color: $tertiary-color;
+                            font-weight: 700;
+                            text-decoration: underline;
+                          }
+
+                    }
+                }
+                article {                
+                    border: 0.15rem solid #000; 
+                    box-shadow: 0.4rem 0.4rem 0 var(--wp--preset--color--royal-blue);
+                    padding: 1rem;
+                    margin-bottom: 3rem;
+                    background: var(--wp--preset--color--white);
+                    position: relative;
+                    
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        inset: 0;
+                        background: repeating-radial-gradient(
+                            circle,
+                            var(--wp--preset--color--golden-yellow) 0px,
+                            var(--wp--preset--color--golden-yellow) 2px,
+                            transparent 2px,
+                            transparent 10px
+                        );
+                        opacity: 0.1;
+                        z-index: 0;
+                    }
+
+                    > * {
+                        position: relative;
+                        z-index: 1;
+                    }     
+                    
+                    .entry-thumbnail {                        
+                        a {
+                            img {
+                                max-height: 255px;
+                                max-width: 230px;
+                                padding: .15rem;                          
+                                background-color: #fff;
+                                border: 1px solid #000;                            
+                            }
+                        }
+                    }
+                    .entry-content {
+                        a {
+                            &.btn {
+                                &:hover {
+                                    background-color: $text-color-white;
+                                    color: $primary-color;
+                                }
+                            }
+                        }
+                    }
+
+                    .entry-header {
+                        .entry-title {
+                            text-align: left;
+
+                            a {
+                                color: $secondary-color;
+                                text-decoration: none;                                
+                            }                            
+                        }
+                    }
+
+                    .entry-summary {
+                        text-align: left;
+
+                        p {
+                            margin: 0;
+                            color: $text-color-black;
+                            text-align: left;
+                            padding-bottom: 1rem;
+                        } 
+                    }
+       
+                    .comic-bubble {
+                        display: inline-block;
+                        background: var(--wp--preset--color--accent-orange);
+                        color: var(--wp--preset--color--black);
+                        font-weight: 500;
+                        padding: 0.5em 1em;
+                        text-decoration: none;
+                        border-radius: 0.3em;
+                        position: relative;
+                    }   
+
+                    .btn {    
+                        border: none;
+                        font-family: $font-heading;
+                        font-size: 1.25rem;
+                        outline: 1px solid #000;
+                        font-weight: 500;
+                        letter-spacing: .05rem;
+                        margin: 0 .75rem 0 0;
+                        padding: .5rem 1rem;
+                        text-transform: uppercase;
+                        transition: background-color .3s ease;
+                    }
+                }
+            }
+        }
+    }
+    &.category-collection {
+        .site-main {
+            .body-section {
+                .archive-posts article .entry-thumbnail a img {
+                    max-height: 150px;
+                    max-width: 100px;
+                    padding: .15rem;
+                }
+            }
+        }  
+    }
+}

@@ -1,0 +1,500 @@
+// Variables & main index
+$primary-color: var(--wp--preset--color--primary); 
+$primary-color-transparent: rgba(0, 91, 187, 0.85);
+$secondary-color: var(--wp--preset--color--secondary); 
+$secondary-color-transparent: rgba(30, 125, 188, 0.651);
+$tertiary-color: #ffad24; 
+$tertiary-color-transparent: rgba($tertiary-color, 0.85);
+$accent-color: var(--wp--preset--color--accent-orange); 
+$dark-red:  var(--wp--preset--color--deep-red); 
+$medium-red: #d9534f;
+$light-blue: var(--wp--preset--color--sky-blue);
+$navy-blue: var(--wp--preset--color--navy-blue);
+$logo-size: 120px;
+$cream: var(--wp--preset--color--background-light);
+$text-color-white: white;
+$text-color-black: black;
+
+// Screen resolutions min-widths
+$desktops-res: 1200px;
+$mobile-res-lg: 1021px;
+$mobile-res-md: 800px;
+$mobile-res-sm: 588px;
+
+$font-heading: 'Bangers', cursive, sans-serif;
+
+// New variable for sidebar width
+$sidebar-width: 500px; // Added to define a consistent sidebar width
+
+/* bootstrap items */
+.btn-primary {
+  background-color: $accent-color;
+  color: $text-color-black;
+}
+.btn-secondary {
+  background-color: $secondary-color;
+}
+/* bootstrap end items */
+
+body {
+  margin: 0;
+  padding: 0;
+
+  pre {
+    color: $text-color-black;    
+  }
+  
+  .header-container {
+    background-image: url('../../images/header-background.png');
+    background-position: 50% center;
+    background-size: cover;
+    background-repeat: repeat-x;
+
+    @media(min-width: $desktops-res){
+      background-size: contain;
+    }
+    
+    .header-top {
+      background: url('../../images/asfalt-light.png'), $secondary-color-transparent;
+      background-blend-mode: overlay;
+      padding: 3px 0;
+
+      .container {
+        max-width: 97.5%;
+
+        .header-tools {      
+          .signin-link {
+            color: $text-color-white;
+            display: flex;
+            justify-content: flex-end;
+            text-decoration: none;
+      
+            .signin-icon i {
+              font-size: 24px;
+            }
+      
+            .signin-text {
+              margin-left: 10px;
+              align-content: center;
+            }
+          }
+        }
+      }
+    }
+
+    .header-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: url('../../images/asfalt-light.png'), $primary-color-transparent;
+      background-blend-mode: overlay;
+      
+      @media(max-width: $mobile-res-lg) {
+        padding: 0;
+      }
+      .container,
+      .container-fluid {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-direction: column;
+        max-width: 97.5%;
+
+        @media(min-width: $desktops-res){
+          flex-direction: row;
+          .header-nav {
+            li {
+              &.menu-item {
+                font-size: larger;
+              }
+            }  
+          }
+        }
+        @media(max-width: $mobile-res-lg) {  
+          padding: 0;
+          max-width: 100%;
+
+          .header-nav {
+            width: 100%;
+            background-color: $primary-color;
+      
+            .navbar-toggler {
+              margin: .1rem .5rem;
+              align-self: flex-end;
+            }
+            .navbar-collapse {
+              width: 100%;
+
+              .dropdown-menu,
+              .dropdown-toggle::after {
+                display: none;
+              }
+
+              li {
+                margin: 0 auto !important;       
+                a {
+                  text-align: center;   
+                
+                  &:hover {
+                    background-color: $primary-color-transparent;
+                  }
+                }
+              }       
+            }
+          }
+        }
+        .logo {
+          padding: 1rem 0;
+          margin: 0 auto;
+
+          img {
+            width: $logo-size;
+            height: auto;
+            object-fit: cover;
+          }
+
+          @media(min-width: $desktops-res){
+            margin: 0;
+          }
+        }
+        .header-nav {
+          display: flex;
+          justify-content: center;
+    
+          .navbar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+    
+            li {
+              display: inline-block;
+              text-align: center;
+              min-width: 144px;
+              margin: 0 10px;        
+    
+              a {
+                text-decoration: none;
+                color: $text-color-white;
+              }            
+    
+              &:last-child {
+                margin-right: 0;
+              }
+
+              ul.dropdown-menu.show { 
+                border: .08rem solid $text-color-black;
+                background-color: $primary-color;
+                box-shadow: 0 0 0 .04rem $text-color-white;
+                border-radius: 0;
+                li {
+                  margin: 0 auto;
+                  width: 100%;
+                  text-align: center;
+                } 
+              }
+            }        
+          }
+        }
+        .navbar-toggler {
+          background-color: $primary-color-transparent;
+
+          &:focus {
+            border: 1px solid $text-color-white;
+            box-shadow: none;
+          }
+        }
+      }
+    }
+    .header-search {
+      display: flex;
+      justify-content: center; 
+      background: url('../../images/asfalt-light.png'), $tertiary-color-transparent;
+      background-blend-mode: overlay;
+      border-top: 3px solid $accent-color;
+      padding: .5rem 0;
+
+      form {
+        .input-group-text{
+          background-color: $accent-color;
+          color: $text-color-black;
+          border: none;
+        }
+      }
+    }
+  }
+  .site-main {
+    background-image: url(../../images/header-background.png);
+    background-position: 50% center;
+    background-size: contain;
+    background-repeat: repeat;
+
+    .hero-section {
+      background: url('../../images/asfalt-light.png'), $primary-color-transparent;
+      background-blend-mode: overlay;
+      height: auto;
+      width: 100%;
+    }
+
+    .body-section,
+    .page-section {
+      background-color: $text-color-white;
+      background: url('../../images/asfalt-light.png'), $primary-color-transparent;
+      background-blend-mode: overlay;
+
+      .wp-block-column.is-vertically-aligned-center {
+        background-color: rgba(0, 0, 0, .3);
+        padding: 0 0 4rem 0;
+
+        h3.wp-block-heading  {          
+          margin-block-start: 0 !important;
+          padding: 1em 2.375em .8em;
+        }  
+      }
+      .wp-block-columns.are-vertically-aligned-center {
+        align-items: center !important;
+        margin-bottom: 0;
+      }
+      .wp-block-group.is-layout-constrained.wp-block-group-is-layout-constrained {
+        padding: 4rem 0 0;
+      }
+      :where(.is-layout-flow) > :first-child {
+        margin-block-start: 1px;
+      }
+      .nf-form-cont {
+        .nf-before-form-content {
+          text-align: left;
+          color: $text-color-white;
+        }
+        .nf-form-content {
+          button, input[type=button], input[type=submit] {
+            border-color: $dark-red;
+            color: $text-color-white;
+            background-color: $medium-red;
+
+            &:hover {
+              background-color: $dark-red;
+            }
+          }
+          .nf-field-container.submit-container {
+            float: right;
+          }
+          .nf-error {
+            text-align: left;
+
+            .nf-error-msg {
+              color: $tertiary-color;
+            }              
+          }
+        }   
+        .nf-after-form-content {
+          text-align: left;
+
+          .nf-error-msg, .ninja-forms-req-symbol {
+            color: $tertiary-color;
+          }             
+        }             
+        .nf-field-label {
+          color: $text-color-white;
+        }
+      } 
+    }
+  }
+  // Updated parent container to enforce layout
+  .d-flex.flex-column.flex-md-row.w-100 {
+    display: flex;
+    flex-wrap: nowrap; // Prevent wrapping to maintain consistent layout
+    width: 100%;
+    max-width: 100%; // Ensure container takes full width
+
+    @media (max-width: $mobile-res-md) {
+      flex-direction: column; // Stack vertically on mobile
+    }
+  }
+  .site-main {
+    flex: 1 1 auto; // Allow main content to take remaining space
+    min-width: 0; // Prevent overflow issues
+  }
+  .sidebar {
+    padding: 1rem;
+    background: var(--wp--preset--color--white);
+    position: relative;
+    width: 100%; 
+    box-sizing: border-box; 
+
+    // Set fixed width for sidebar on larger screens
+    @media (min-width: $mobile-res-lg) {
+      width: $sidebar-width; 
+      flex: 0 0 $sidebar-width; 
+      max-width: $sidebar-width; 
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-radial-gradient(
+        circle,
+        var(--wp--preset--color--golden-yellow) 0px,
+        var(--wp--preset--color--golden-yellow) 2px,
+        transparent 2px,
+        transparent 10px
+      );
+      opacity: 0.08;
+      z-index: 0;
+    }
+
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .widget {
+      margin-bottom: 2rem;
+
+      h2,
+      h3 {
+        color: $secondary-color;
+        border-bottom: 2px dashed $secondary-color;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05rem;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+          margin: 0.5rem 0;
+
+          a {
+            color: $text-color-black;
+            text-decoration: none;
+            padding: 0.25rem 0.5rem;
+            display: block;
+            border-left: 3px solid transparent;
+
+            &:hover {
+              background: var(--wp--preset--color--accent-orange);
+              color: var(--wp--preset--color--white);
+              border-left-color: $secondary-color;
+            }
+          }
+        }
+      }
+
+      p {
+        margin: 0.5rem 0;
+        color: $text-color-black;
+      }
+    }
+  }
+  footer {
+    border-top: 3px solid #ffad24;
+
+    .collectible-footer {
+      color: $text-color-white;
+
+      .newsletter-signup {
+          background: radial-gradient(circle at top left, #fff5eb 0, $cream 100%);
+          border-bottom: 4px solid $accent-color;
+          padding: 2rem;
+          position: relative;  
+
+          img {
+            position: relative;
+          }  
+          h4 {
+            font-weight: bold;
+            color: $text-color-black;
+          }
+          .newsletter-form {
+            position: relative;
+
+              form {
+                max-width: 500px;
+                margin: 2rem auto;
+              } 
+              .newsletter-form-wp {
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  margin: 0;
+      
+                  label {
+                    color: $text-color-black;
+                  }      
+                  input[type="email"] {
+                    flex: 1;
+                    min-width: 200px;
+                    padding: 10px;
+                  }
+                  input[type="submit"] {
+                    padding: 10px 20px;
+                    cursor: pointer;
+                    white-space: nowrap;
+                  }
+              }
+          }
+          &::before {
+            content: "";
+            background: url('../../images/9211407.png');
+            opacity: 0.04;
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+          }
+      }
+      .social-links{
+        background: url('https://www.transparenttextures.com/patterns/asfalt-light.png'), $primary-color-transparent;
+        background-blend-mode: overlay;
+
+        .btn {
+          color: $primary-color-transparent;
+          padding: .5rem;
+
+          i {
+            background-color: $text-color-white;
+            border-radius: 22px;
+            font-size: 1.6rem;
+            padding: .6rem .6rem .5rem;
+          }
+        }
+      }
+      .site-info {
+        background: url('../../images/asfalt-light.png'), $secondary-color-transparent;
+        background-blend-mode: overlay;
+
+        ul {
+          list-style: none;
+
+          li {
+            display: block;
+            
+            p {
+              margin: 0;
+              color: rgba($text-color-white, .7);
+            }
+          }
+
+          @media(min-width: $mobile-res-lg){
+              li {
+                display: inline-block;
+              }
+          }
+        }
+      }
+    }
+  }
+}
+@import 'home';
+@import 'category';
+@import 'search';
+@import 'single';
+@import 'page';
+@import 'comics';
+@import 'shortcodes';
+@import 'toastify';
+

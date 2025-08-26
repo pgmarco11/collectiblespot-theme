@@ -1,0 +1,45 @@
+// Override Toastify styles
+.toastify {
+    box-shadow: none !important;
+    background: $text-color-white !important; // white background
+    color: $text-color-black !important;     // black text
+    
+    // Border and font style matching your theme
+    border: 2px solid $primary-color;
+    font-family: Lato, sans-serif; // 'Bangers', cursive, sans-serif
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 12px 20px;
+    border-radius: 8px;
+  
+    // Remove background gradients & shadows
+    background-image: none !important;
+    box-shadow: none !important;
+
+    button {
+        background-color: $primary-color;
+        border: none;
+        color: $text-color-white;
+        padding: 6px 14px;
+        margin: 0 5px;
+        font-family: $font-heading;
+        font-size: 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+          
+        &.toast-close {
+            color: $dark-red !important;
+            background-color: $text-color-white;
+            font-weight: bold;          
+        }
+    
+        &:hover {
+          background-color: $accent-color;
+        }
+      }
+  }
+  
+
+  
