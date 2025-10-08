@@ -18,7 +18,10 @@ function u_enqueue() {
     );
     wp_enqueue_style('collectible-comic-fonts');
 
-    
+    // Preload Google Fonts for performance
+    add_action('wp_head', function () {
+        echo '<link rel="preload" href="https://fonts.googleapis.com/css2?family=Bangers&family=Bebas+Neue&family=Lato:wght@100;300;400;700;900&display=swap" as="styleXK0 crossorigin>';
+    }, 1);
 
     // Enqueue Bootstrap CSS
     wp_register_style(
@@ -28,6 +31,11 @@ function u_enqueue() {
         '5.3.2'
     );
     wp_enqueue_style('bootstrap-css');
+
+    // Preload Bootstrap CSS
+    add_action('wp_head', function () {
+        echo '<link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" as="style" crossorigin>';
+    }, 1);
 
     wp_register_style(
         'bootstrap-icons', 
@@ -53,7 +61,16 @@ function u_enqueue() {
 
     // Enqueue theme scripts
     if (isset($manifest['index.js'])) {
-        wp_enqueue_script('collectibles-script', get_template_directory_uri() . '/public/' . $manifest['index.js'], ['bootstrap-js'], null, true);
+        wp_enqueue_script('collectibles-script', get_template_directory() . '/public/' . $manifest['index.js'], ['bootstrap-js'], null, true);
     }
 }
+
+// Defer Bootstrap JS
+add_filter('script_loader_tag', function ($tag, $handle, $src) {
+    if ('bootstrap-js' === $handle) {
+        $tag = str_replace(' src=', ' defer src=', $tag);
+    }
+    return $tag;
+}, 10, 3);
+
 add_action('wp_enqueue_scripts', 'u_enqueue');
