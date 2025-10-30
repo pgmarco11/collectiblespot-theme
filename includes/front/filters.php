@@ -32,4 +32,13 @@ function search_groupby_categories($groupby) {
 }
 add_filter('posts_groupby', 'search_groupby_categories');
 
+function defer_scripts($tag, $handle, $src) {
+    $defer_scripts = ['wp-emoji-release', 'jquery-migrate'];
+    if (in_array($handle, $defer_scripts)) {
+        return str_replace(' src', ' defer src', $tag);
+    }
+    return $tag;
+}
+add_filter('script_loader_tag', 'defer_scripts', 10, 3);
+
 ?>

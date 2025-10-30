@@ -33,7 +33,8 @@
             </header>
             <?php 
             if (!is_user_logged_in()) {
-                echo '<p class="has-white-color">Please log in to view your collection.</p>';
+                echo '<p class="has-white-color">Please <a href="' . site_url('/login') . '" style="color: white;">log in</a> to view your collection.</p>';
+
             } else {
                 if (have_posts()) : ?>
                     <div class="archive-posts">

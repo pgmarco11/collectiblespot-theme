@@ -2,6 +2,25 @@
 /*
 Template Name: Comic Book Titles
 */
+?>
+<style>
+#book-container {
+    min-height: 400px;
+    position: relative;
+}
+#loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+#book-container > * {
+    position: relative;
+    z-index: 1;
+}
+</style>
+<?php
 
 if (!defined('ABSPATH')) {
     exit;

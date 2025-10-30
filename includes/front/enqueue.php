@@ -20,7 +20,7 @@ function u_enqueue() {
 
     // Preload Google Fonts for performance
     add_action('wp_head', function () {
-        echo '<link rel="preload" href="https://fonts.googleapis.com/css2?family=Bangers&family=Bebas+Neue&family=Lato:wght@100;300;400;700;900&display=swap" as="styleXK0 crossorigin>';
+        echo '<link rel="preload" href="https://fonts.googleapis.com/css2?family=Bangers&family=Bebas+Neue&family=Lato:wght@100;300;400;700;900&display=swap" as="style" crossorigin>';
     }, 1);
 
     // Enqueue Bootstrap CSS
@@ -37,6 +37,7 @@ function u_enqueue() {
         echo '<link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" as="style" crossorigin>';
     }, 1);
 
+    // Enqueue Bootstrap Icons CSS
     wp_register_style(
         'bootstrap-icons', 
         'https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css',
@@ -44,6 +45,11 @@ function u_enqueue() {
         '1.10.0'
     );
     wp_enqueue_style('bootstrap-icons');
+
+    // Preload Bootstrap Icons font
+    add_action('wp_head', function () {
+        echo '<link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/fonts/bootstrap-icons.woff2?e34853135f9e39acf64315236852cd5a" as="font" type="font/woff2" crossorigin>';
+    }, 1);
 
     // Enqueue theme styles
     if (isset($manifest['index.css'])) {
