@@ -1,153 +1,176 @@
 <?php
 /*
-Template Name: Comic Book Titles
+Template Name: Comic Books
 */
-?>
-<style>
-#book-container {
-    min-height: 400px;
-    position: relative;
-}
-#loading-spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-}
-#book-container > * {
-    position: relative;
-    z-index: 1;
-}
-</style>
-<?php
+if (current_user_can('manage_options')): ?>
+    <script>
+    // Only admins see this live debug panel
+    window.PHP_DEBUG = <?= json_encode([
+        'url'           => $_SERVER['REQUEST_URI'],
+        'page'          => $page,
+        'letter'        => $letter,
+        'search'        => $search,
+        'publisher_id'  => $selected_publisher,
+        'initial_data'  => $initial_data,           // This is the MOST IMPORTANT one
+        'server_time'   => date('H:i:s'),
+    ]) ?>;
+    console.log('%c PHP SERVER DEBUG → ', 'background:#000;color:#0f0;font-size:14px', window.PHP_DEBUG);
+    </script>
+    <?php endif; 
 
-if (!defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if (!class_exists('ComicRenderer') || !class_exists('MetronAPI')) {
-    echo '<p>Error: Required classes (ComicRenderer or MetronAPI) not found. Please check if the Comic Book Settings plugin is activated.</p>';
-    return;
+if ( ! class_exists( 'ComicRenderer' ) ) {
+    wp_die( '<p>Error: ComicRenderer class not found. Please activate the plugin.</p>' );
 }
 
+/* -----------------------------------------------------------------
+ *  Input
+ * ----------------------------------------------------------------- */
 
-$selected_publisher = isset($_GET['publisher_id']) ? intval($_GET['publisher_id']) : 0;
-$page = isset($_GET['page']) ? $_GET['page'] : 1;
-$letter = isset($_GET['letter']) && $_GET['letter'] !== '' ? sanitize_text_field($_GET['letter']) : 'all';
 $per_page = 10;
+$page   = max(1, get_query_var('page', 1));
+$letter = sanitize_text_field(get_query_var('letter', 'all'));
+$search = sanitize_text_field(get_query_var('search', ''));
+$selected_publisher = intval(get_query_var('publisher_id', 0));
 
-// Initialize initial_data
-$initial_data = [
-    'items' => [],
-    'total' => 0,
-    'type' => $selected_publisher ? 'books' : 'publishers',
-    'per_page' => $per_page,
-    'letter' => $letter,
-    'page' => $page,
-    'publisher_id' => $selected_publisher,
-];
+error_log("RAW URL PARAMS: page={$_GET['page']}, letter={$_GET['letter']}, search={$_GET['search']}");
 
+/* -----------------------------------------------------------------
+ *  Renderer
+ * ----------------------------------------------------------------- */
+$comic_renderer = new ComicRenderer();
+
+/* -----------------------------------------------------------------
+ *  Initial data
+ * ----------------------------------------------------------------- */
+    $initial_data = [
+        'items'        => [],
+        'total'        => 0,
+        'type'         => 'publishers',
+        'per_page'     => $per_page,
+        'page'         => $page,
+        'letter'       => $letter ?: 'all',
+        'publisher_id' => $selected_publisher,
+        'search'       => $search,
+    ];
+/* -----------------------------------------------------------------
+ *  Fetch data
+ * ----------------------------------------------------------------- */
+if ( $selected_publisher > 0 ) {
+    $series_data = $comic_renderer->get_series(
+        $selected_publisher,
+        $page,
+        $per_page,
+        $search,
+        $letter,
+        true   
+    );
+    $initial_data['items']         = $series_data['items']   ?? [];
+    $initial_data['total']         = $series_data['total']   ?? 0;
+    $initial_data['type']          = 'series';
+    $initial_data['per_page']      = $series_data['per_page'] ?? $per_page;
+
+    $publisher_info = $comic_renderer->get_publisher_info($selected_publisher);
+
+} elseif ( empty($search) ) {
+
+    $letter = $letter ?: 'all';
+    $bypass_cache = ($page > 1);
+
+    $pub_data = $comic_renderer->get_enriched_publishers(
+        $page,
+        10,
+        $letter,
+        $bypass_cache
+    );
+
+    $initial_data['items']     = $pub_data['items'] ?? [];
+    $initial_data['total']     = $pub_data['total'] ?? 0;
+    $initial_data['type']     = 'publishers';
+    $initial_data['per_page']  = 10;
+    
+}
+
+// Dropdown – CORRECT 4-PARAM CALL
+$dropdown_publishers = $comic_renderer->get_publishers( '', 1, 1000, 'all' )['items'] ?? [];
+
+/* -----------------------------------------------------------------
+ *  Output
+ * ----------------------------------------------------------------- */
 get_header();
-
 ?>
 
 <div class="d-flex flex-column flex-md-row w-100">
     <main class="site-main flex-fill">
         <section id="body-content" class="page-section text-center">
+
+            <!-- BREADCRUMBS -->
             <header class="page-header">
                 <nav class="category-breadcrumbs">
-                    <a href="<?php echo esc_url(get_permalink()); ?>">Publishers</a>
-                    <?php 
-
-                    $comic_renderer = new ComicRenderer();
-
-                    // Fetch data server-side
-                    if ($selected_publisher) {
-                        $series_data = $comic_renderer->get_series($selected_publisher, $page, $per_page, '', $letter);
-                        $initial_data['items'] = $series_data['items'] ?? [];
-                        $initial_data['total'] = $series_data['total'] ?? 0;
-                        $initial_data['type'] = 'books';
-                        $publisher_info = $comic_renderer->get_publisher_info($selected_publisher);
-                    } else {
-                        $publisher_data = $comic_renderer->get_publishers('', $page, $per_page, false, $letter);
-                        $initial_data['items'] = $publisher_data['items'] ?? [];
-                        $initial_data['total'] = $publisher_data['total'] ?? 0;
-                        $initial_data['type'] = 'publishers';
-                    }
-
-                    // Fetch publishers for dropdown
-                    $dropdown_publishers = $comic_renderer->get_publishers('', 1, 1000, true)['items'] ?? [];
-
-                    error_log("Page $page fetched: " . count($initial_data['items']) . " items, type: {$initial_data['type']}");   
-                    
-                    if (!empty($publisher_info) && !empty($publisher_info['name'])): ?>
+                <a href="<?php echo esc_url(get_permalink()); ?>">Publishers</a>
+                    <?php if ( ! empty( $publisher_info['name'] ?? '' ) ) : ?>
                         <span class="separator">➤</span>
-                        <span class="current-category"><?php echo esc_html($publisher_info['name']); ?></span>
+                        <span class="current-category"><?php echo esc_html( $publisher_info['name'] ); ?></span>
                     <?php endif; ?>
                 </nav>
                 <h1 class="page-title"><span><?php the_title(); ?></span></h1>
             </header>
 
+            <!-- FILTERS -->
             <div class="page-filters">
                 <select name="publisher_id" id="publisher-select" aria-label="Select Publisher">
                     <option value="">Select a publisher</option>
-                    <?php
-                    if (empty($dropdown_publishers)) {
-                        error_log("No publishers available for dropdown");
-                        ?>
-                        <option value="" disabled>No publishers available</option>
-                        <?php
-                    } else {
-                        foreach ($dropdown_publishers as $publisher) {
-                            if (!is_array($publisher) || !isset($publisher['id'], $publisher['name'])) {
-                                error_log("Invalid publisher in dropdown: " . print_r($publisher, true));
-                                continue;
-                            }
-                            ?>
-                            <option value="<?php echo esc_attr($publisher['id']); ?>" <?php selected($selected_publisher, $publisher['id']); ?>>
-                                <?php echo esc_html($publisher['name']); ?>
-                            </option>
-                        <?php } ?>
-                    <?php } ?>
+                    <?php foreach ( $dropdown_publishers as $pub ) : ?>
+                        <?php if ( empty( $pub['id'] ) || empty( $pub['name'] ) ) continue; ?>
+                        <option value="<?php echo esc_attr( $pub['id'] ); ?>" <?php selected( $selected_publisher, $pub['id'] ); ?>>
+                            <?php echo esc_html( $pub['name'] ); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
 
                 <div class="search-wrapper">
-                    <input type="text" id="comic-search" placeholder="Search <?php echo $selected_publisher ? 'titles' : 'publishers'; ?>..." aria-label="Search <?php echo $selected_publisher ? 'titles' : 'publishers'; ?>">
+                    <input type="text" id="comic-search"
+                        value="<?php echo esc_attr($search); ?>"
+                        placeholder="<?php echo $selected_publisher ? 'Search titles...' : 'Search publishers...'; ?>"
+                        aria-label="Search">
                 </div>
             </div>
 
-            <?php if (!empty($selected_publisher) && !empty($publisher_info)): ?>
+            <!-- PUBLISHER INFO -->
+            <?php if ( $selected_publisher && !empty( $publisher_info ) ) : ?>
                 <div class="publisher-info">
                     <div class="publisher-details">
-                        <?php if (!empty($publisher_info['image'])): ?>
-                            <img src="<?php echo esc_url($publisher_info['image']); ?>" alt="<?php echo esc_attr($publisher_info['name']); ?> Logo" class="publisher-image" loading="lazy">
+                        <?php if ( ! empty( $publisher_info['image'] ) ) : ?>
+                            <img src="<?php echo esc_url( $publisher_info['image'] ); ?>"
+                                 alt="<?php echo esc_attr( $publisher_info['name'] ); ?> Logo"
+                                 class="publisher-image" loading="lazy">
                         <?php endif; ?>
                         <div class="publisher-description">
-                            <h2><?php echo esc_html($publisher_info['name']); ?></h2>
-                            <p><strong>Founded:</strong> <?php echo !empty($publisher_info['founded']) ? esc_html($publisher_info['founded']) : 'N/A'; ?></p>
-                            <p><strong>Description:</strong> <?php echo !empty($publisher_info['desc']) ? esc_html($publisher_info['desc']) : 'No description available.'; ?></p>
+                            <h2><?php echo esc_html( $publisher_info['name'] ); ?></h2>
+                            <p><strong>Founded:</strong> <?php echo esc_html( $publisher_info['founded'] ?? 'N/A' ); ?></p>
+                            <p><strong>Description:</strong> <?php echo wp_kses_post( $publisher_info['desc'] ?? 'No description available.' ); ?></p>
                         </div>
                     </div>
                 </div>
             <?php endif; ?>
-
-            <div id="letter-buttons" class="filters letter-filter">
-                <button type="button" class="letter-btn <?php echo ($letter === 'all') ? 'active' : ''; ?>" data-letter="all">All</button>
-                <?php foreach (range('A', 'Z') as $l): ?>
-                    <button type="button" class="letter-btn <?php echo ($letter === $l) ? 'active' : ''; ?>" data-letter="<?php echo esc_attr($l); ?>"><?php echo $l; ?></button>
+                  
+            <!-- LETTER FILTER -->
+            <div id="letter-buttons" class="filters letter-filter" style="display: flex;">
+                <button type="button" class="letter-btn <?php echo $letter === 'all' ? 'active' : ''; ?>" data-letter="all">All</button>
+                <?php foreach ( range( 'A', 'Z' ) as $l ) : ?>
+                    <button type="button" class="letter-btn <?php echo $letter === $l ? 'active' : ''; ?>" data-letter="<?php echo $l; ?>">
+                        <?php echo $l; ?>
+                    </button>
                 <?php endforeach; ?>
-                <button type="button" class="letter-btn <?php echo ($letter === '#') ? 'active' : ''; ?>" data-letter="#">#</button>
+                <button type="button" class="letter-btn <?php echo $letter === '#' ? 'active' : ''; ?>" data-letter="#">#</button>
             </div>
+            
+            <!-- RENDER LIST -->
+            <?php $comic_renderer->render_template( $initial_data ); ?>
 
-            <!-- Spinner hidden by default -->
-            <div id="loading-spinner" style="display:none;" aria-busy="true" aria-label="Loading content">
-                <div class="spinner"></div>
-                <p>Loading <?php echo $initial_data['type'] === 'publishers' ? 'publishers' : 'series'; ?>...</p>
-            </div>
-
-            <!-- Dynamic content rendered by render_template -->
-            <?php $comic_renderer->render_template($initial_data); ?>
         </section>
     </main>
 </div>

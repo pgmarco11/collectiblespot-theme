@@ -26,7 +26,7 @@
             <div class="container">
             <div class="logo">
                 <a href="<?php echo esc_url(home_url()); ?>" title="The Collectible Spot">
-                    <img src="<?php echo esc_url('/wp-content/uploads/2025/03/collectible-spot-logo-300x282.png'); ?>" 
+                    <img src="<?php echo esc_url('/wp-content/uploads/2025/03/collectible-spot-logo-300x282.webp'); ?>" 
                         alt="Collectible Spot Logo" 
                         width="300" height="282" 
                     >

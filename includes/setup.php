@@ -120,13 +120,21 @@ function custom_rewrite_rules() {
 }
 add_action('init', 'custom_rewrite_rules');
 
+add_action('init', function() {
+    global $wp;
+    $wp->add_query_var('publisher_id');
+    $wp->add_query_var('letter');
+    $wp->add_query_var('search');
+});
+
 // Register custom query vars
 function register_custom_query_vars($vars) {
     return array_merge($vars, [
         'publisher_slug',
         'title_slug',
         'title_id',
-        'page'
+        'page',
+        'letter'
     ]);
 }
 add_filter('query_vars', 'register_custom_query_vars');
