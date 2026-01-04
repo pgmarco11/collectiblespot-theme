@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+
+
 if ( ! class_exists( 'ComicRenderer' ) ) {
     wp_die( '<p>Error: Required classes not found.</p>' );
 }
@@ -16,6 +18,7 @@ if ( ! class_exists( 'ComicRenderer' ) ) {
 $plugin_path    = defined( 'COMICBOOKS_FETCHER_PATH' )
     ? COMICBOOKS_FETCHER_PATH
     : trailingslashit( WP_PLUGIN_DIR ) . 'comic-book-fetcher/';
+
 $issue_template = $plugin_path . 'templates/issue-item-template.php';
 
 if ( ! file_exists( $issue_template ) ) {
@@ -26,7 +29,7 @@ if ( ! file_exists( $issue_template ) ) {
  *  Input
  * ----------------------------------------------------------------- */
 $title_id   = isset( $_GET['title_id'] ) ? max( 0, intval( $_GET['title_id'] ) ) : 0;
-$issue_page = isset( $_GET['issue_page'] ) ? max( 1, intval( $_GET['issue_page'] ) ) : 1;
+$page       = isset( $_GET['page'] ) ? max( 1, intval( $_GET['page'] ) ) : 1;
 $search     = isset( $_GET['search'] ) ? strtolower( trim( wp_strip_all_tags( $_GET['search'] ) ) ) : '';
 
 if ( ! $title_id ) {
@@ -36,12 +39,12 @@ if ( ! $title_id ) {
 /* -----------------------------------------------------------------
  *  Page-level cache
  * ----------------------------------------------------------------- */
-$cache_key   = "metron:issues_page:{$title_id}:{$issue_page}:" . md5( $search );
+$cache_key   = "metron:issue_list:{$title_id}:{$page}:" . md5( $search );
 $cached_html = get_transient( $cache_key );
 
 if ( $cached_html !== false ) {
-    get_header();
-    echo $cached_html; // already minified
+    get_header();    
+    echo $cached_html; 
     ?>
     <script>
     (function(){
@@ -69,7 +72,7 @@ if ( $cached_html !== false ) {
  *  Data
  * ----------------------------------------------------------------- */
 $comic_renderer = new ComicRenderer();
-$data           = $comic_renderer->get_series_issues( $title_id, $issue_page, $search );
+$data           = $comic_renderer->get_series_issues( $title_id, $page, $search );
 
 if ( isset( $data['error'] ) ) {
     get_header();
@@ -79,7 +82,7 @@ if ( isset( $data['error'] ) ) {
 }
 
 /* -----------------------------------------------------------------
- *  Normalise data (defensive)
+ *  Normalize data
  * ----------------------------------------------------------------- */
 $series          = $data['series'] ?? [];
 $issue_list_data = $data['issue_list'] ?? [];
@@ -170,19 +173,19 @@ ob_start();
 
                 <!-- SPINNER -->
                 <div id="loading-spinner"
-                    class="spinner-overlay <?php echo ( $issue_page === 1 && empty( $search ) && $all_issues ) ? 'hidden' : ''; ?>"
+                    class="spinner-overlay <?php echo ( $page === 1 && empty( $search ) && $all_issues ) ? 'hidden' : ''; ?>"
                      aria-busy="true" aria-label="Loading content">
                     <div class="spinner"></div>
-                    <p>Loading issues...</p>
+                    <p>Loading series issues...</p>  
                 </div>
 
                 <!-- LIST -->
                 <div id="issues-list"
                      data-total="<?php echo $total_issues; ?>"
-                     data-page="<?php echo $issue_page; ?>"
-                     class="<?php echo ( $issue_page === 1 && empty( $search ) && $all_issues ) ? 'server-rendered loaded' : ''; ?>">
+                     data-page="<?php echo $page; ?>"
+                     class="<?php echo ( $page === 1 && empty( $search ) && $all_issues ) ? 'server-rendered loaded' : ''; ?>">
 
-                    <?php if ( $issue_page === 1 && empty( $search ) ) : ?>
+                    <?php if ( $page === 1 && empty( $search ) ) : ?>
 
                     <!-- DEBUG: -->
                      <?php error_log('all_issues count: ' . count($all_issues)); ?>
@@ -211,46 +214,58 @@ ob_start();
                     <?php endif; ?>
                 </div>
 
-                <!-- PAGINATION -->
+                <!-- PAGINATION -->  
+                <?php
+                $page = (int) $page;
+                $total_pages = (int) $total_pages;
+                ?>
+
                 <div id="pagination-wrapper">
-                    <?php if ( $total_pages > 1 ) : ?>
-                        <div class="pagination-wrapper">
-                            <p>Page <?php echo $issue_page; ?> of <?php echo $total_pages; ?></p>
+                <?php if ( $total_pages > 1 ) : ?>
+                    <div class="pagination-wrapper">
+                        <p>Page <?php echo $page; ?> of <?php echo $total_pages; ?></p>
 
-                            <?php if ( $issue_page > 1 ) : ?>
-                                <button type="button" class="page-btn"
-                                        data-page="<?php echo $issue_page - 1; ?>"
-                                        data-title-id="<?php echo $title_id; ?>"
-                                        data-search="<?php echo esc_attr( $search ); ?>">
-                                    Previous
-                                </button>
-                            <?php endif; ?>
+                        <?php if ( $page > 1 ) : ?>
+                            <button type="button"
+                                class="page-btn"
+                                data-page="<?php echo $page - 1; ?>"
+                                data-title-id="<?php echo esc_attr( $title_id ); ?>"
+                                data-search="<?php echo esc_attr( $search ); ?>"
+                                data-per-page="<?php echo esc_attr( $per_page ); ?>">
+                                Previous
+                            </button>
+                        <?php endif; ?>
 
-                            <?php
-                            $start = max( 1, $issue_page - 2 );
-                            $end   = min( $total_pages, $issue_page + 2 );
-                            for ( $i = $start; $i <= $end; $i++ ) :
-                                ?>
-                                <button type="button"
-                                        class="page-btn <?php echo $i === $issue_page ? 'active' : ''; ?>"
-                                        data-page="<?php echo $i; ?>"
-                                        data-title-id="<?php echo $title_id; ?>"
-                                        data-search="<?php echo esc_attr( $search ); ?>">
-                                    <?php echo $i; ?>
-                                </button>
-                            <?php endfor; ?>
+                        <?php
+                        $start = max( 1, $page - 2 );
+                        $end   = min( $total_pages, $page + 2 );
 
-                            <?php if ( $issue_page < $total_pages ) : ?>
-                                <button type="button" class="page-btn"
-                                        data-page="<?php echo $issue_page + 1; ?>"
-                                        data-title-id="<?php echo $title_id; ?>"
-                                        data-search="<?php echo esc_attr( $search ); ?>">
-                                    Next
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
+                        for ( $i = $start; $i <= $end; $i++ ) :
+                        ?>
+                            <button type="button"
+                                class="page-btn<?php echo $i == $page ? ' active' : ''; ?>"
+                                data-page="<?php echo $i; ?>"
+                                data-title-id="<?php echo esc_attr( $title_id ); ?>"
+                                data-search="<?php echo esc_attr( $search ); ?>"
+                                data-per-page="<?php echo esc_attr( $per_page ); ?>">
+                                <?php echo $i; ?>
+                            </button>
+                        <?php endfor; ?>
+
+                        <?php if ( $page < $total_pages ) : ?>
+                            <button type="button"
+                                class="page-btn"
+                                data-page="<?php echo $page + 1; ?>"
+                                data-title-id="<?php echo esc_attr( $title_id ); ?>"
+                                data-search="<?php echo esc_attr( $search ); ?>"
+                                data-per-page="<?php echo esc_attr( $per_page ); ?>">
+                                Next
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
                 </div>
+
             </div>
         </section>
     </main>

@@ -123,8 +123,8 @@ add_action('init', 'custom_rewrite_rules');
 add_action('init', function() {
     global $wp;
     $wp->add_query_var('publisher_id');
-    $wp->add_query_var('letter');
     $wp->add_query_var('search');
+    $wp->add_query_var('page');
 });
 
 // Register custom query vars
@@ -133,7 +133,7 @@ function register_custom_query_vars($vars) {
         'publisher_slug',
         'title_slug',
         'title_id',
-        'page',
+        'page' ,
         'letter'
     ]);
 }
