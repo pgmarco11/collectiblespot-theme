@@ -109,47 +109,20 @@ function exclude_pages_from_search($query) {
 }
 add_action('pre_get_posts', 'exclude_pages_from_search');
 
-// Custom rewrite rules
-function custom_rewrite_rules() {
-    add_rewrite_rule('^title/([0-9]+)/?', 'index.php?page_id=123&title_id=$matches[1]', 'top');
-    add_rewrite_rule(
-        '^comic-catalog/([^/]+)/([^/]+)/?',
-        'index.php?pagename=comic-catalog&comic_issues_template=1&publisher_slug=$matches[1]&title_slug=$matches[2]',
-        'top'
-    );
-}
-add_action('init', 'custom_rewrite_rules');
-
 add_action('init', function() {
     global $wp;
     $wp->add_query_var('publisher_id');
     $wp->add_query_var('search');
-    $wp->add_query_var('page');
 });
 
 // Register custom query vars
-function register_custom_query_vars($vars) {
-    return array_merge($vars, [
-        'publisher_slug',
-        'title_slug',
-        'title_id',
-        'page' ,
-        'letter'
-    ]);
-}
+add_filter('query_vars', function($vars) {
+    $vars[] = 'title_id';
+    $vars[] = 'issue_id';
+    $vars[] = 'letter';
+    return $vars;
+});
 add_filter('query_vars', 'register_custom_query_vars');
-
-// Load custom template
-function load_comic_issues_template($template) {
-    if (intval(get_query_var('comic_issues_template')) === 1) {
-        $custom_template = get_template_directory() . '/page-comic-issues.php';
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
-    }
-    return $template;
-}
-add_filter('template_include', 'load_comic_issues_template');
 
 //for single post category templates
 function post_is_in_descendant_category($cats, $_post = null) {
