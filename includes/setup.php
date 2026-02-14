@@ -122,7 +122,7 @@ add_filter('query_vars', function($vars) {
     $vars[] = 'letter';
     return $vars;
 });
-add_filter('query_vars', 'register_custom_query_vars');
+
 
 //for single post category templates
 function post_is_in_descendant_category($cats, $_post = null) {
