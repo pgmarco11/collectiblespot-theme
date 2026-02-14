@@ -23,6 +23,14 @@ $mobile-res-sm: 588px;
 
 $font-heading: 'Bangers', cursive, sans-serif;
 
+h1, h2, h5, h6 {
+  font-family: $font-heading;
+}
+h3, h4, .comic-title-name, .comic-title-meta span {
+  font-family: var(--wp--preset--font-family--lato);
+  font-weight: 600;
+}
+
 // New variable for sidebar width
 $sidebar-width: 500px; // Added to define a consistent sidebar width
 
@@ -406,7 +414,7 @@ body {
           img {
             position: relative;
           }  
-          h4 {
+          h2 {
             font-weight: bold;
             color: $text-color-black;
           }

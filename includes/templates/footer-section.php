@@ -2,7 +2,7 @@
 <div class="collectible-footer container-fluid mt-0">
     <div id="Newsletter" class="row newsletter-signup py-4">
         <div class="col-lg-12 text-center">
-            <h4 class="mb-3">Subscribe to Our Newsletter</h4>
+            <h2 class="mb-3">Subscribe to Our Newsletter</h2>
             <div class="newsletter-form">
                 <?php                    
                     echo do_shortcode('[mc4wp_form id=3517]'); 

@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: Comic Books
+Template Name: Comic Catalog
 */
 if (current_user_can('manage_options')): ?>
     <script>
@@ -35,8 +35,6 @@ $page   = max(1, get_query_var('page', 1));
 $letter = sanitize_text_field(get_query_var('letter', 'all'));
 $search = sanitize_text_field(get_query_var('search', ''));
 $selected_publisher = intval(get_query_var('publisher_id', 0));
-
-error_log("RAW URL PARAMS: page={$_GET['page']}, letter={$_GET['letter']}, search={$_GET['search']}");
 
 /* -----------------------------------------------------------------
  *  Renderer

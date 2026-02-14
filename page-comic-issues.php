@@ -130,11 +130,11 @@ ob_start();
             <!-- BREADCRUMBS & TITLE -->
             <header class="page-header">
                 <nav class="category-breadcrumbs">
-                    <a href="<?php echo esc_url( home_url( '/comic-books' ) ); ?>">Publishers</a>
+                    <a href="<?php echo esc_url( home_url( '/comic-catalog' ) ); ?>">Publishers</a>
                     <span class="separator">➤</span>
                     <?php if ( ! empty( $series['publisher']['id'] ) ) : ?>
                         <span class="category">
-                            <a href="<?php echo esc_url( add_query_arg( 'publisher_id', $series['publisher']['id'], home_url( '/comic-books/' ) ) ); ?>">
+                            <a href="<?php echo esc_url( add_query_arg( 'publisher_id', $series['publisher']['id'], home_url( '/comic-catalog/' ) ) ); ?>">
                                 <?php echo esc_html( $series['publisher']['name'] ?? '' ); ?>
                             </a>
                         </span>

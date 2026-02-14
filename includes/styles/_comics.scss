@@ -51,71 +51,6 @@
         }
       }
     }    
-    .comic-issues-container {
-      background-color: $text-color-white;
-      padding: 1rem 2rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba($text-color-black, 0.05);
-    
-      h2 {
-        font-family: $font-heading;
-        text-align: left;
-        color: $dark-red;
-        font-size: 2rem;
-        margin-bottom: 1rem;
-      }
-    
-      ul {
-        padding-left: 0;
-        margin-bottom: 0;
-        padding-bottom: 1rem;
-        list-style: none;
-    
-        li {
-          display: flex;
-          align-items: center;
-          padding: 0.5rem 0;
-          border-bottom: 1px dashed $cream;
-    
-          img {
-            width: 60px;
-            height: auto;
-            margin-right: 1rem;
-            border-radius: 4px;
-            box-shadow: 0 0 4px rgba($text-color-black, 0.1);
-          }
-    
-          strong {
-            color: $navy-blue;
-            margin-right: 0.5rem;         
-            font-size: 1.1rem;
-          }
-    
-          &:last-child {
-            border-bottom: none;
-          }
-        }
-      }    
-      .pagination {
-        margin-top: 1rem;
-        text-align: center;
-    
-        a {
-          display: inline-block;
-          margin: 0 0.25rem;
-          padding: 0.5rem 0.75rem;
-          background-color: $primary-color;
-          color: $text-color-white;
-          border-radius: 4px;
-          text-decoration: none;
-    
-          &.current,
-          &:hover {
-            background-color: $dark-red;
-          }
-        }
-      }
-    }
     
     @media (max-width: 600px) {
       .page-header h1 {
@@ -136,6 +71,8 @@
     }
   }
 }   
+.page-template-page-issue-details,
+.page-template-page-comic-catalog,
 .page-template-page-comic-issues {
   .page-section {   
     .comic-issues-container {

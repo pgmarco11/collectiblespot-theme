@@ -113,8 +113,8 @@ add_action('pre_get_posts', 'exclude_pages_from_search');
 function custom_rewrite_rules() {
     add_rewrite_rule('^title/([0-9]+)/?', 'index.php?page_id=123&title_id=$matches[1]', 'top');
     add_rewrite_rule(
-        '^comic-books/([^/]+)/([^/]+)/?',
-        'index.php?pagename=comic-books&comic_issues_template=1&publisher_slug=$matches[1]&title_slug=$matches[2]',
+        '^comic-catalog/([^/]+)/([^/]+)/?',
+        'index.php?pagename=comic-catalog&comic_issues_template=1&publisher_slug=$matches[1]&title_slug=$matches[2]',
         'top'
     );
 }

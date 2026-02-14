@@ -109,7 +109,6 @@
       },
       "heading": {
         "typography": {
-          "fontFamily": "var(--wp--preset--font-family--bangers)",
           "textTransform": "uppercase",
           "letterSpacing": "0.05em"
         },
