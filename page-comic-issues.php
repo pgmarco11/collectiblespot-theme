@@ -187,9 +187,17 @@ ob_start();
 
                     <?php if ( $page === 1 && empty( $search ) ) : ?>
 
-                    <!-- DEBUG: -->
-                     <?php error_log('all_issues count: ' . count($all_issues)); ?>
-                     <!-- -->
+                        <?php error_log('all_issues count: ' . count($all_issues)); ?>
+
+                        <?php
+                        // Fallback sort         
+                        usort($all_issues, function($a, $b) {
+                                    $idA = (int) ($a['id'] ?? 0);
+                                    $idB = (int) ($b['id'] ?? 0);
+                                    return $idA <=> $idB;
+                        });
+                    
+                        ?>
                         <?php if ( $all_issues ) : ?>
                             <ul class="issues-list">
                                 <?php foreach ( $all_issues as $issue ) : ?>
