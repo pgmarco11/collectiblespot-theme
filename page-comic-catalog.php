@@ -91,8 +91,6 @@ if ( $selected_publisher > 0 ) {
     $initial_data['per_page']  = 10;
     
 }
-
-// Dropdown – CORRECT 4-PARAM CALL
 $dropdown_publishers = $comic_renderer->get_publishers( '', 1, 1000, 'all' )['items'] ?? [];
 
 /* -----------------------------------------------------------------
@@ -157,14 +155,18 @@ get_header();
                   
             <!-- LETTER FILTER -->
             <div id="letter-buttons" class="filters letter-filter" style="display: flex;">
-                <button type="button" class="letter-btn <?php echo $letter === 'all' ? 'active' : ''; ?>" data-letter="all">All</button>
+                <a href="<?php echo esc_url( add_query_arg( array( 'letter' => 'all', 'page' => 1, 'publisher_id' => $selected_publisher ), get_permalink() ) ); ?>" 
+                   class="letter-btn <?php echo $letter === 'all' ? 'active' : ''; ?>" data-letter="all">All</a>
                 <?php foreach ( range( 'A', 'Z' ) as $l ) : ?>
-                    <button type="button" class="letter-btn <?php echo $letter === $l ? 'active' : ''; ?>" data-letter="<?php echo $l; ?>">
+                    <a href="<?php echo esc_url( add_query_arg( array( 'letter' => $l, 'page' => 1, 'publisher_id' => $selected_publisher ), get_permalink() ) ); ?>" 
+                       class="letter-btn <?php echo $letter === $l ? 'active' : ''; ?>" data-letter="<?php echo $l; ?>">
                         <?php echo $l; ?>
-                    </button>
+                    </a>
                 <?php endforeach; ?>
-                <button type="button" class="letter-btn <?php echo $letter === '#' ? 'active' : ''; ?>" data-letter="#">#</button>
+                <a href="<?php echo esc_url( add_query_arg( array( 'letter' => '#', 'page' => 1, 'publisher_id' => $selected_publisher ), get_permalink() ) ); ?>" 
+                   class="letter-btn <?php echo $letter === '#' ? 'active' : ''; ?>" data-letter="#">#</a>
             </div>
+
             
             <!-- RENDER LIST -->
             <?php $comic_renderer->render_template( $initial_data ); ?>

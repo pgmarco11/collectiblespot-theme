@@ -6,8 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-
-
 if ( ! class_exists( 'ComicRenderer' ) ) {
     wp_die( '<p>Error: Required classes not found.</p>' );
 }
@@ -22,7 +20,10 @@ $plugin_path    = defined( 'COMICBOOKS_FETCHER_PATH' )
 $issue_template = $plugin_path . 'templates/issue-item-template.php';
 
 if ( ! file_exists( $issue_template ) ) {
-    wp_die( '<p>Error: Issue template not found.</p>' );
+    get_header();
+    echo '<div class="container"><p class="error-message">Error: The issue template file could not be found. Please contact the site administrator.</p></div>';
+    get_footer();
+    return;
 }
 
 /* -----------------------------------------------------------------
@@ -36,9 +37,8 @@ if ( ! $title_id ) {
     wp_die( '<p>No series selected.</p>' );
 }
 
-/* -----------------------------------------------------------------
- *  Page-level cache
- * ----------------------------------------------------------------- */
+// The cache key includes the MD5 hash of the search query to ensure uniqueness for different search terms
+// while keeping the key length manageable for storage and retrieval.
 $cache_key   = "metron:issue_list:{$title_id}:{$page}:" . md5( $search );
 $cached_html = get_transient( $cache_key );
 
@@ -72,7 +72,10 @@ if ( $cached_html !== false ) {
  *  Data
  * ----------------------------------------------------------------- */
 $comic_renderer = new ComicRenderer();
-$data           = $comic_renderer->get_series_issues( $title_id, $page, $search );
+
+$start = microtime(true);
+$data = $comic_renderer->get_series_issues( $title_id, $page, $search );
+$time = microtime(true) - $start;
 
 if ( isset( $data['error'] ) ) {
     get_header();
@@ -92,12 +95,20 @@ $per_page        = 10;
 $total_pages     = max( 1, (int) ceil( $total_issues / $per_page ) );
 
 $metron_ids      = array_filter( array_column( $all_issues, 'id' ) );
+
+// Load asynchronously via AJAX instead
 $cv_info_batch   = [];
 $collection_status = [];
 
+// Only load if cached already (won't block)
 if ( $metron_ids ) {
-    $cv_info_batch = $comic_renderer->get_comicvine_issue_info_batch( $metron_ids );
-
+    foreach ( $metron_ids as $mid ) {
+        $cv_cache = get_transient( "comic_vine_data:{$mid}" );
+        if ( $cv_cache !== false ) {
+            $cv_info_batch[ $mid ] = $cv_cache;
+        }
+    }
+    
     if ( is_user_logged_in() ) {
         $collection_status = $comic_renderer->get_collection_status( $metron_ids );
     }
@@ -116,8 +127,6 @@ ob_start();
 
 <style>
 .no-results { text-align:center; margin-top:20px; }
-#loading-spinner.hidden { opacity:0 !important; visibility:hidden !important; z-index:-1 !important; }
-#loading-spinner p { margin:0; font-size:16px; }
 #issues-list { position:relative; min-height:400px; z-index:1; }
 #issues-list.loaded,#issues-list.server-rendered { z-index:10; }
 .issues-list { position:relative; z-index:10 !important; }
@@ -162,6 +171,15 @@ ob_start();
                 </ul>
             </div>
 
+            <!-- SPINNER -->
+            <div id="loading-spinner" 
+                class="spinner-overlay"
+                aria-live="polite"
+                aria-label="Loading content">
+                <div class="spinner"></div>
+                <p>Loading series issues...</p>
+            </div>   
+
             <!-- ISSUES LIST -->
             <div class="comic-issues-container">
                 <div class="issues-header">
@@ -171,34 +189,27 @@ ob_start();
                     </div>
                 </div>
 
-                <!-- SPINNER -->
-                <div id="loading-spinner"
-                    class="spinner-overlay <?php echo ( $page === 1 && empty( $search ) && $all_issues ) ? 'hidden' : ''; ?>"
-                     aria-busy="true" aria-label="Loading content">
-                    <div class="spinner"></div>
-                    <p>Loading series issues...</p>  
-                </div>
-
                 <!-- LIST -->
                 <div id="issues-list"
                      data-total="<?php echo $total_issues; ?>"
                      data-page="<?php echo $page; ?>"
+                     data-title-id="<?php echo esc_attr( $title_id ); ?>"
+                     data-metron-ids="<?php echo esc_attr( wp_json_encode( array_values( $metron_ids ) ) ); ?>"
                      class="<?php echo ( $page === 1 && empty( $search ) && $all_issues ) ? 'server-rendered loaded' : ''; ?>">
 
                     <?php if ( $page === 1 && empty( $search ) ) : ?>
-
-                        <?php error_log('all_issues count: ' . count($all_issues)); ?>
-
-                        <?php
-                        // Fallback sort         
-                        usort($all_issues, function($a, $b) {
-                                    $idA = (int) ($a['id'] ?? 0);
-                                    $idB = (int) ($b['id'] ?? 0);
-                                    return $idA <=> $idB;
-                        });
-                    
-                        ?>
-                        <?php if ( $all_issues ) : ?>
+                        <?php if ( $all_issues ) : 
+                            usort($all_issues, function($a, $b) {
+                                $numA = isset($a['number']) ? (float)trim($a['number']) : INF;
+                                $numB = isset($b['number']) ? (float)trim($b['number']) : INF;
+                                
+                                if ($numA !== $numB) {
+                                    return $numA <=> $numB;
+                                }
+                                
+                                return ((int)($a['id'] ?? 0)) <=> ((int)($b['id'] ?? 0));
+                            });
+                            ?>
                             <ul class="issues-list">
                                 <?php foreach ( $all_issues as $issue ) : ?>
                                     <?php
@@ -215,7 +226,7 @@ ob_start();
                         <?php endif; ?>
 
                     <?php else : ?>
-                        <!-- AJAX placeholders -->
+                        <!-- AJAX placeholders for other pages -->
                         <?php for ( $i = 0; $i < min( 10, $total_issues ); $i++ ) : ?>
                             <div class="issue-placeholder"></div>
                         <?php endfor; ?>
@@ -226,6 +237,9 @@ ob_start();
                 <?php
                 $page = (int) $page;
                 $total_pages = (int) $total_pages;
+                $range = 2;
+                $start = max(1, $page - $range);
+                $end = min($total_pages, $page + $range);
                 ?>
 
                 <div id="pagination-wrapper">
@@ -233,42 +247,34 @@ ob_start();
                     <div class="pagination-wrapper">
                         <p>Page <?php echo $page; ?> of <?php echo $total_pages; ?></p>
 
-                        <?php if ( $page > 1 ) : ?>
-                            <button type="button"
-                                class="page-btn"
-                                data-page="<?php echo $page - 1; ?>"
-                                data-title-id="<?php echo esc_attr( $title_id ); ?>"
-                                data-search="<?php echo esc_attr( $search ); ?>"
-                                data-per-page="<?php echo esc_attr( $per_page ); ?>">
+                        <?php if ($page > 1) : ?>
+                            <a href="<?php echo esc_url(add_query_arg('page', $page - 1)); ?>"
+                            class="page-btn"
+                            data-page="<?php echo $page - 1; ?>"
+                            data-title-id="<?php echo esc_attr($title_id); ?>">
                                 Previous
-                            </button>
+                            </a>
                         <?php endif; ?>
 
-                        <?php
-                        $start = max( 1, $page - 2 );
-                        $end   = min( $total_pages, $page + 2 );
-
-                        for ( $i = $start; $i <= $end; $i++ ) :
-                        ?>
-                            <button type="button"
-                                class="page-btn<?php echo $i == $page ? ' active' : ''; ?>"
-                                data-page="<?php echo $i; ?>"
-                                data-title-id="<?php echo esc_attr( $title_id ); ?>"
-                                data-search="<?php echo esc_attr( $search ); ?>"
-                                data-per-page="<?php echo esc_attr( $per_page ); ?>">
+                        <?php for ($i = $start; $i <= $end; $i++) : ?>
+                            <?php $is_active = $i == $page; ?>
+                            <a href="<?php echo $is_active ? '#' : esc_url(add_query_arg('page', $i)); ?>"
+                            class="page-btn<?php echo $is_active ? ' active' : ''; ?>"
+                            data-page="<?php echo $i; ?>"
+                            data-title-id="<?php echo esc_attr($title_id); ?>">
                                 <?php echo $i; ?>
-                            </button>
+                            </a>
                         <?php endfor; ?>
 
                         <?php if ( $page < $total_pages ) : ?>
-                            <button type="button"
+                            <a href="<?php echo esc_url(add_query_arg('page', $page + 1)); ?>"
                                 class="page-btn"
                                 data-page="<?php echo $page + 1; ?>"
                                 data-title-id="<?php echo esc_attr( $title_id ); ?>"
                                 data-search="<?php echo esc_attr( $search ); ?>"
                                 data-per-page="<?php echo esc_attr( $per_page ); ?>">
                                 Next
-                            </button>
+                            </a>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
@@ -293,14 +299,17 @@ $main_html = preg_replace_callback(
     preg_replace( ['/>\s+</', '/\s+/'], ['><', ' '], $main_html )
 );
 
-set_transient( $cache_key, $main_html, 2 * HOUR_IN_SECONDS );
+set_transient( $cache_key, $main_html, 24 * HOUR_IN_SECONDS );
 
 echo $main_html;
 ?>
 
+<!-- SINGLE CV FETCH SCRIPT - Only runs once -->
 <script>
 (function(){
     'use strict';
+    
+    // Hide spinner when content is ready
     function hideSpinner(){
         const list = document.getElementById('issues-list');
         const spin = document.getElementById('loading-spinner');
@@ -313,6 +322,33 @@ echo $main_html;
     hideSpinner();
     window.addEventListener('pageshow',hideSpinner);
     window.addEventListener('focus',hideSpinner);
+
+    // Load CV data asynchronously (non-blocking)
+    const listElement = document.getElementById('issues-list');
+    const metronIds = listElement ? JSON.parse(listElement.getAttribute('data-metron-ids') || '[]') : [];
+    const nonce = '<?php echo wp_create_nonce( 'comicbooks_fetchers_data' ); ?>';
+    
+    if ( metronIds.length === 0 ) return;
+    
+    // Fire after page fully loads
+    setTimeout(() => {
+        fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                action: 'load_comic_vine_batch',
+                nonce: nonce,
+                metron_ids: metronIds.join(',')
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if ( data.success ) {
+                console.log('CV data loaded:', data.data);           
+            }
+        })
+        .catch(err => console.error('CV data fetch failed:', err));
+    }, 500);
 })();
 </script>
 
