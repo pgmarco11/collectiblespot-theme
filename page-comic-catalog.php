@@ -33,7 +33,6 @@ if ( ! class_exists( 'ComicRenderer' ) ) {
 $per_page = 10;
 $page   = max(1, get_query_var('page', 1));
 $letter = sanitize_text_field(get_query_var('letter', 'all'));
-$letter = urldecode($letter);
 $search = sanitize_text_field(get_query_var('search', ''));
 $selected_publisher = intval(get_query_var('publisher_id', 0));
 
@@ -164,12 +163,8 @@ get_header();
                         <?php echo $l; ?>
                     </a>
                 <?php endforeach; ?>
-                <a href="<?php echo esc_url( add_query_arg( array(
-                    'letter' => rawurlencode('#'),
-                    'page' => 1,
-                    'publisher_id' => $selected_publisher
-                ), get_permalink() ) ); ?>" 
-                class="letter-btn <?php echo $letter === '#' ? 'active' : ''; ?>" data-letter="#">#</a>
+                <a href="<?php echo esc_url( add_query_arg( array( 'letter' => '#', 'page' => 1, 'publisher_id' => $selected_publisher ), get_permalink() ) ); ?>" 
+                   class="letter-btn <?php echo $letter === '#' ? 'active' : ''; ?>" data-letter="#">#</a>
             </div>
 
             
