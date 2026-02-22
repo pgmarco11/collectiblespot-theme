@@ -151,10 +151,8 @@ ob_start();
                     <?php endif; ?>
                     <span class="current-category"><?php echo esc_html( $series['name'] ?? 'Comic Series' ); ?></span>
                 </nav>
-
                 <h1 class="page-title"><span><?php echo esc_html( $series['name'] ?? 'Comic Series' ); ?></span></h1>
             </header>
-
             <!-- SERIES META -->
             <div class="comic-series-container">
                 <ul style="display:flex;gap:.5rem;justify-content:flex-start;">
@@ -170,16 +168,14 @@ ob_start();
                     <?php endif; ?>
                 </ul>
             </div>
-
             <!-- SPINNER -->
             <div id="loading-spinner" 
                 class="spinner-overlay"
                 aria-live="polite"
                 aria-label="Loading content">
                 <div class="spinner"></div>
-                <p>Loading series issues...</p>
-            </div>   
-
+                <p>Loading...</p>
+            </div> 
             <!-- ISSUES LIST -->
             <div class="comic-issues-container">
                 <div class="issues-header">
@@ -188,7 +184,6 @@ ob_start();
                         <input type="text" id="issue-search" value="<?php echo esc_attr( $search ); ?>" placeholder="Search issues..." aria-label="Search issues">
                     </div>
                 </div>
-
                 <!-- LIST -->
                 <div id="issues-list"
                      data-total="<?php echo $total_issues; ?>"
@@ -196,17 +191,13 @@ ob_start();
                      data-title-id="<?php echo esc_attr( $title_id ); ?>"
                      data-metron-ids="<?php echo esc_attr( wp_json_encode( array_values( $metron_ids ) ) ); ?>"
                      class="<?php echo ( $page === 1 && empty( $search ) && $all_issues ) ? 'server-rendered loaded' : ''; ?>">
-
-                    <?php if ( $page === 1 && empty( $search ) ) : ?>
-                        <?php if ( $all_issues ) : 
+                     <?php if ($page === 1 && empty($search) && $all_issues) : 
                             usort($all_issues, function($a, $b) {
                                 $numA = isset($a['number']) ? (float)trim($a['number']) : INF;
-                                $numB = isset($b['number']) ? (float)trim($b['number']) : INF;
-                                
+                                $numB = isset($b['number']) ? (float)trim($b['number']) : INF;                                
                                 if ($numA !== $numB) {
                                     return $numA <=> $numB;
-                                }
-                                
+                                }                                
                                 return ((int)($a['id'] ?? 0)) <=> ((int)($b['id'] ?? 0));
                             });
                             ?>
@@ -214,23 +205,23 @@ ob_start();
                                 <?php foreach ( $all_issues as $issue ) : ?>
                                     <?php
                                     if ( empty( $issue['id'] ) ) continue;
-                                    $issue_cv_info = $cv_info_batch[ $issue['id'] ] ?? [];
-                                    $issue_collection = $collection_status[ $issue['id'] ] ?? false;
-                                    $issue_highlights = $cv_info_batch[ $issue['id'] ]['_highlights'] ?? [];
+                                        $issue_cv_info = $cv_info_batch[ $issue['id'] ] ?? [];
+                                        $issue_collection = $collection_status[ $issue['id'] ] ?? false;
+                                        $issue_highlights = $cv_info_batch[ $issue['id'] ]['_highlights'] ?? [];
                                     ?>
                                     <?php include $issue_template; ?>
                                 <?php endforeach; ?>
                             </ul>
-                        <?php else : ?>
-                            <p class="no-results">No issues found for this series.</p>
-                        <?php endif; ?>
-
-                    <?php else : ?>
-                        <!-- AJAX placeholders for other pages -->
-                        <?php for ( $i = 0; $i < min( 10, $total_issues ); $i++ ) : ?>
-                            <div class="issue-placeholder"></div>
-                        <?php endfor; ?>
-                    <?php endif; ?>
+                            <?php else : ?>
+                                    <?php if (empty($all_issues) || count($all_issues) === 0) : ?>
+                                        <p class="no-results">No issues found for this series on page <?php echo $page; ?>.</p>
+                                    <?php else : ?>
+                                        <!-- AJAX placeholders -->
+                                        <?php for ($i = 0; $i < min(10, $total_issues); $i++) : ?>
+                                            <div class="issue-placeholder"></div>
+                                        <?php endfor; ?>
+                                    <?php endif; ?>
+                             <?php endif; ?>
                 </div>
 
                 <!-- PAGINATION -->  
