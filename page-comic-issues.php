@@ -177,7 +177,7 @@ ob_start();
                 aria-live="polite"
                 aria-label="Loading content">
                 <div class="spinner"></div>
-                <p>Loading series issues...</p>
+                <p>Loading...</p>
             </div>   
 
             <!-- ISSUES LIST -->
@@ -197,8 +197,7 @@ ob_start();
                      data-metron-ids="<?php echo esc_attr( wp_json_encode( array_values( $metron_ids ) ) ); ?>"
                      class="<?php echo ( $page === 1 && empty( $search ) && $all_issues ) ? 'server-rendered loaded' : ''; ?>">
 
-                    <?php if ( $page === 1 && empty( $search ) ) : ?>
-                        <?php if ( $all_issues ) : 
+                     <?php if ($page === 1 && empty($search) && $all_issues) : 
                             usort($all_issues, function($a, $b) {
                                 $numA = isset($a['number']) ? (float)trim($a['number']) : INF;
                                 $numB = isset($b['number']) ? (float)trim($b['number']) : INF;
@@ -221,16 +220,16 @@ ob_start();
                                     <?php include $issue_template; ?>
                                 <?php endforeach; ?>
                             </ul>
-                        <?php else : ?>
-                            <p class="no-results">No issues found for this series.</p>
-                        <?php endif; ?>
-
-                    <?php else : ?>
-                        <!-- AJAX placeholders for other pages -->
-                        <?php for ( $i = 0; $i < min( 10, $total_issues ); $i++ ) : ?>
-                            <div class="issue-placeholder"></div>
-                        <?php endfor; ?>
-                    <?php endif; ?>
+                            <?php else : ?>
+                                    <?php if (empty($all_issues) || count($all_issues) === 0) : ?>
+                                        <p class="no-results">No issues found for this series on page <?php echo $page; ?>.</p>
+                                    <?php else : ?>
+                                        <!-- AJAX placeholders -->
+                                        <?php for ($i = 0; $i < min(10, $total_issues); $i++) : ?>
+                                            <div class="issue-placeholder"></div>
+                                        <?php endfor; ?>
+                                    <?php endif; ?>
+                             <?php endif; ?>
                 </div>
 
                 <!-- PAGINATION -->  
