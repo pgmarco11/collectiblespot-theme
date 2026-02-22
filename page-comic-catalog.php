@@ -2,22 +2,6 @@
 /*
 Template Name: Comic Catalog
 */
-if (current_user_can('manage_options')): ?>
-    <script>
-    // Only admins see this live debug panel
-    window.PHP_DEBUG = <?= json_encode([
-        'url'           => $_SERVER['REQUEST_URI'],
-        'page'          => $page,
-        'letter'        => $letter,
-        'search'        => $search,
-        'publisher_id'  => $selected_publisher,
-        'initial_data'  => $initial_data,           // This is the MOST IMPORTANT one
-        'server_time'   => date('H:i:s'),
-    ]) ?>;
-    console.log('%c PHP SERVER DEBUG → ', 'background:#000;color:#0f0;font-size:14px', window.PHP_DEBUG);
-    </script>
-    <?php endif; 
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -31,7 +15,7 @@ if ( ! class_exists( 'ComicRenderer' ) ) {
  * ----------------------------------------------------------------- */
 
 $per_page = 10;
-$page   = max(1, get_query_var('page', 1));
+$page =   max(1, intval(get_query_var('page')) ?: 1);
 $letter = sanitize_text_field(get_query_var('letter', 'all'));
 $letter = urldecode($letter);
 $search = sanitize_text_field(get_query_var('search', ''));
