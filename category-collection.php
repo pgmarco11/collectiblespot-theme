@@ -44,15 +44,10 @@
                                 <?php 
 
                                     $thumbnail_id = get_post_thumbnail_id();
-                                    if ($thumbnail_id) {
-                                        error_log('Post ' . get_the_ID() . ' has thumbnail ID: ' . $thumbnail_id);
-                                        $thumbnail_url = wp_get_attachment_url($thumbnail_id);
-                                        error_log('Thumbnail URL for post ' . get_the_ID() . ': ' . ($thumbnail_url ? $thumbnail_url : 'No URL found'));
-                                    } else {
-                                        error_log('No thumbnail found for post ' . get_the_ID());
-                                        // Log additional metadata for debugging
-                                        $image_url = get_post_meta(get_the_ID(), 'image_url', true);
-                                        error_log('Stored image_url meta for post ' . get_the_ID() . ': ' . ($image_url ? $image_url : 'No image_url meta'));
+                                    if ($thumbnail_id) {                                 
+                                        $thumbnail_url = wp_get_attachment_url($thumbnail_id);                               
+                                    } else { 
+                                        $image_url = get_post_meta(get_the_ID(), 'cover_image_url', true);  
                                     }
                                     ?>
                                     <?php if (has_post_thumbnail()) : ?>
@@ -61,13 +56,11 @@
                                             <?php 
                                                 the_post_thumbnail('medium', ['class' => 'attachment-medium']);
                                                 $image_data = wp_get_attachment_image_src($thumbnail_id, 'medium');
-                                                error_log('Thumbnail displayed for post ' . get_the_ID() . ' - Size: medium, URL: ' . ($image_data ? $image_data[0] : 'No image data'));
                                                 ?>
                                             </a>
                                         </div>
                                     <?php else: ?>
-                                        <div class="entry-thumbnail">                                         
-                                            <?php error_log('No featured image available for post ' . get_the_ID()); ?>
+                                        <div class="entry-thumbnail">  
                                             <!-- Display placeholder image if available -->
                                             <?php
                                             $placeholder_url = defined('PUBLISHER_PLACEHOLDER_IMAGE_URL') ? PUBLISHER_PLACEHOLDER_IMAGE_URL : '';
@@ -76,11 +69,9 @@
                                             <?php
                                                 if ($image_url && filter_var($image_url, FILTER_VALIDATE_URL)) {
                                                     echo '<img src="' . esc_url($image_url) . '" alt="Comic Image" class="attachment-medium">';
-                                                    error_log('Displayed meta image_url for post ' . get_the_ID() . ': ' . $image_url);
                                                 } else {
                                                     echo '<img src="' . esc_url($placeholder_url) . '" alt="Placeholder Image" class="attachment-medium">';
-                                                    error_log('Displayed placeholder image for post ' . get_the_ID() . ': ' . $placeholder_url);
-                                                } 
+                                                 } 
                                             ?>
                                             </a>
                                         </div>
@@ -88,7 +79,11 @@
 
                                 <div class="entry-content">
                                     <header class="entry-header">
-                                        <?php the_title('<h2 class="entry-title"><a href="' . esc_url(get_permalink()) . '" rel="bookmark">', '</a></h2>'); ?>
+                                        <h2 class="entry-title">
+                                            <a href="<?php echo esc_url(get_permalink()); ?>" rel="bookmark">
+                                                <?php echo esc_html(get_post_field('post_title', get_the_ID())); ?>
+                                            </a>
+                                        </h2>  
                                     </header>    
                                     <div class="entry-summary"></div>    
                                     <div class="d-flex justify-content-start">                    
@@ -97,11 +92,13 @@
                                         if (is_user_logged_in() && get_post_field('post_author', get_the_ID()) == get_current_user_id()) {
                                             $nonce = wp_create_nonce('remove_collection_nonce');
                                             ?>
-                                            <form method="post" class="remove-collection-form" onsubmit="return confirm('Are you sure you want to remove this issue from your collection?');">
-                                                <input type="hidden" name="post_id" value="<?php echo esc_attr(get_the_ID()); ?>">
-                                                <input type="hidden" name="remove_collection_nonce" value="<?php echo esc_attr($nonce); ?>">
-                                                <button type="submit" class="btn btn-danger">Remove from Collection</button>
-                                            </form>
+                                            <button 
+                                                type="button"
+                                                class="btn btn-danger remove-from-collection"
+                                                data-post-id="<?php echo esc_attr(get_the_ID()); ?>"
+                                            >
+                                                Remove from Collection
+                                            </button>
                                         <?php } ?>
                                     </div>
                                 </div>
@@ -135,8 +132,6 @@
             ?> 
         </section>    
     </main>
-
-    <?php get_sidebar(); ?>
 </div>
 
 <?php get_footer(); ?>

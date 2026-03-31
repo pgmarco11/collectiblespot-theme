@@ -66,9 +66,9 @@ function u_enqueue() {
     );
 
     // Enqueue theme scripts
-    if (isset($manifest['index.js'])) {
-        wp_enqueue_script('collectibles-script', get_template_directory() . '/public/' . $manifest['index.js'], ['bootstrap-js'], null, true);
-    }
+    // if (isset($manifest['index.js'])) {
+    //     wp_enqueue_script('collectibles-script', get_template_directory() . '/public/' . $manifest['index.js'], ['bootstrap-js'], null, true);
+    // }
 }
 
 // Defer Bootstrap JS

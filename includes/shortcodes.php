@@ -73,10 +73,6 @@ function collectible_posts_shortcode($atts) {
     wp_reset_postdata();
 
     $output .= '</div>';
-
-    // Log the post count for debugging
-    error_log("collectible_posts_shortcode: Found $post_count posts for category '$child_category'");
-
     return $output;
 }
 add_shortcode('collectible_posts', 'collectible_posts_shortcode');

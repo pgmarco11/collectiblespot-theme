@@ -7,6 +7,7 @@ function u_setup_theme() {
     add_theme_support('widgets');
     add_theme_support('block-template-parts');
     add_theme_support('post-thumbnails');
+    add_theme_support( 'responsive-embeds' );
 
     register_nav_menus([
         'main' => 'Main Menu'

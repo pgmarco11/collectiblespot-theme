@@ -187,9 +187,10 @@
         .site-main {
             .body-section {
                 .archive-posts article .entry-thumbnail a img {
-                    max-height: 150px;
-                    max-width: 100px;
-                    padding: .15rem;
+                    max-height: 180px;
+                    max-width: 150px;
+                    width: 100%;
+                    padding: .15rem; 
                 }
             }
         }  
