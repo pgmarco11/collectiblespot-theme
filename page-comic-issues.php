@@ -77,8 +77,6 @@ $data           = $comic_renderer->get_series_issues( $title_id, $page, $search 
 
 error_log("Rendering issues page | title_id=$title_id | page=$page | search='{$search}'");
 
-error_log("get_series_issues: {$title_id}, {$page} => " . json_encode($data));
-
 if ( isset( $data['error'] ) ) {
     get_header();
     echo '<div class="container"><p class="no-results">Error: ' . esc_html( $data['error'] ) . '</p></div>';
