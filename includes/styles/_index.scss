@@ -245,6 +245,8 @@ body {
 
     .body-section,
     .page-section {
+      padding: 1rem 5% 0 2.5rem;
+      height: 100%;
       background-color: $text-color-white;
       background: url('../../images/asfalt-light.png'), $primary-color-transparent;
       background-blend-mode: overlay;
@@ -503,6 +505,7 @@ body {
 @import 'single';
 @import 'page';
 @import 'comics';
+@import 'collection';
 @import 'shortcodes';
 @import 'toastify';
 

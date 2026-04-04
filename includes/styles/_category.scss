@@ -2,9 +2,6 @@
 .category {
     .site-main {
         .body-section {
-            padding: 1rem 5% 0 2.5rem;
-            height: 100%;
-
             .page-header {
                 .page-title {
                     text-align: left;
@@ -56,9 +53,8 @@
                         color: $text-color-white;
                     }
                 }
-            }            
-    
-            .archive-posts {
+            }
+            .category-posts {
                 nav  {
                     .nav-links {
                         font-family: $font-heading;
@@ -186,7 +182,7 @@
     &.category-collection {
         .site-main {
             .body-section {
-                .archive-posts article .entry-thumbnail a img {
+                .category-posts article .entry-thumbnail a img {
                     max-height: 180px;
                     max-width: 150px;
                     width: 100%;

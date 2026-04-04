@@ -2,7 +2,6 @@
 // Get category IDs for 'collectibles', 'auctions', and 'collection' using their slugs
 $collectibles_parent_id = get_category_by_slug('collectibles')->term_id;
 $auctions_parent_id = get_category_by_slug('auctions')->term_id;
-$collection_parent_id = get_category_by_slug('collection')->term_id;
 
 // Determine which header to display based on post category
 if (
@@ -12,7 +11,7 @@ if (
     // Load collectibles-specific header for posts in collectibles or auctions categories
     get_template_part('parts/header', 'collectibles');
 } elseif (
-    post_is_in_descendant_category($collection_parent_id) || in_category($collection_parent_id)
+    get_post_type() === 'collection'
 ) {
     // Load collection-specific header for posts in collection category
     get_template_part('parts/header', 'collection');
@@ -27,7 +26,7 @@ if (have_posts()) :
 
         // Check if post is in collection category or its descendants
         if (
-            post_is_in_descendant_category($collection_parent_id) || in_category($collection_parent_id)
+            get_post_type() === 'collection'
         ) {
             // Load collection-specific template part for collection category posts
             get_template_part('parts/single', 'collection');
@@ -37,7 +36,7 @@ if (have_posts()) :
             <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 
                 <!-- Breadcrumb navigation -->
-                <nav class="breadcrumb mb-4">        
+                <nav class="breadcrumb mb-4">                    
                     <?php
                     // Get all categories for the current post
                     $categories = get_the_category();
@@ -132,7 +131,7 @@ if (
     ?>
 <?php
  // Close section and main tags for specific categories without sidebar
- elseif (post_is_in_descendant_category($collection_parent_id) || in_category($collection_parent_id)): ?>
+ elseif (get_post_type() === 'collection'): ?>
 
     </section>
     </main>

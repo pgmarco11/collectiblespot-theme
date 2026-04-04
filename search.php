@@ -12,7 +12,7 @@
             </header>
 
             <?php if (have_posts()) : ?>
-                <div class="archive-posts">
+                <div class="search-posts">
                     <?php while (have_posts()) : the_post(); 
                         
                         $ebay_price = get_post_meta(get_the_ID(), 'ebay_price', true);

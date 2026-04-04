@@ -34,7 +34,7 @@
             </header>
 
             <?php if (have_posts()) : ?>
-                <div class="archive-posts">
+                <div class="category-posts">
                 <?php while (have_posts()) : the_post(); 
                 $ebay_price = get_post_meta(get_the_ID(), 'ebay_price', true);
                 $buy_now_price = get_post_meta(get_the_ID(), 'ebay_buy_now_price', true);
@@ -55,7 +55,7 @@
                             <?php if (has_post_thumbnail()) : ?>
                                 <div class="entry-thumbnail">
                                     <a href="<?php the_permalink(); ?>">
-                                        <?php the_post_thumbnail('medium'); ?>
+                                        <?php the_post_thumbnail([210, 300]); ?>
                                     </a>
                                 </div>
                             <?php endif; ?>

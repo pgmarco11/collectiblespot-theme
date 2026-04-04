@@ -101,10 +101,12 @@
           }
   
           img {   
+            height: auto;
+            max-height: 50%;
             margin: 2rem auto .5rem;
+            object-fit: cover;
             padding: 0;
-            height: 45%;
-            width: auto;
+            width: 90%;
             border: 1px solid $text-color-white;
           }
   
