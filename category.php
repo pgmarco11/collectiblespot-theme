@@ -99,9 +99,9 @@
                                                                                    
                                         ?>
                                     </a>
-                                    <a href="<?= the_permalink(); ?>" class="btn btn-secondary">View Details</a>
+                                    <a href="<?= the_permalink(); ?>" class="btn btn-info">View Details</a>
                                    <?php if(is_user_logged_in()): ?>
-                                    <button class="add-to-wishlist"
+                                    <button class="add-to-wishlist btn btn-secondary"
                                         data-type="post"        
                                         data-item-id="<?php the_ID(); ?>"
                                         data-ebay-id="<?php echo esc_attr($ebay_id); ?>"
