@@ -49,7 +49,7 @@ if ( $selected_publisher > 0 ) {
         $per_page,
         $search,
         $letter,
-        true   
+        false
     );
     $initial_data['items']         = $series_data['items']   ?? [];
     $initial_data['total']         = $series_data['total']   ?? 0;
