@@ -46,25 +46,6 @@ $cached_html = get_transient( $cache_key );
 if ($cached_html !== false && empty($search)) {
     get_header();
     echo $cached_html;
-    ?>
-    <script>
-        (function(){
-            'use strict';
-            function hideSpinner(){
-                const list = document.getElementById('issues-list');
-                const spin = document.getElementById('loading-spinner');
-                if(!list||!spin) return;
-                if(list.querySelector('li.issue-item,.no-results')){
-                    spin.classList.add('hidden');
-                    list.classList.add('loaded');
-                }
-            }
-            hideSpinner();
-            window.addEventListener('pageshow',hideSpinner);
-            window.addEventListener('focus',hideSpinner);
-        })();
-    </script>
-    <?php
     get_footer();
     return;
 }
@@ -75,7 +56,6 @@ if ($cached_html !== false && empty($search)) {
 $comic_renderer = new ComicRenderer();
 $data           = $comic_renderer->get_series_issues( $title_id, $page, $search );
 
-error_log("Rendering issues page | title_id=$title_id | page=$page | search='{$search}'");
 
 if ( isset( $data['error'] ) ) {
     get_header();
@@ -87,21 +67,18 @@ if ( isset( $data['error'] ) ) {
 /* -----------------------------------------------------------------
  *  Normalize data
  * ----------------------------------------------------------------- */
-$series       = $data['series'] ?? [];
-$issue_list   = $data['issue_list'] ?? [];
-$all_issues   = isset($issue_list['results']) && is_array($issue_list['results']) 
-                ? $issue_list['results'] 
-                : [];
-
-$total_issues = (int) ($issue_list['count'] ?? 0);
-$per_page     = 10;
-$total_pages  = max(1, (int) ceil($total_issues / $per_page));
+$series             = $data['series'] ?? [];
+$issue_list         = $data['issue_list'] ?? [];
+$all_issues         = isset($issue_list['results']) && is_array($issue_list['results']) ? $issue_list['results'] : [];
+$total_issues       = (int) ($issue_list['count'] ?? 0);
+$metron_ids         = [];
+$collection_status  = [];
+$per_page           = 10;
+$total_pages        = max(1, (int) ceil($total_issues / $per_page));
 
 // Defensive re-sort by issue number
 if (!empty($all_issues)) {
-
-    error_log("issues_found=" . count($all_issues));
-    
+        
     usort($all_issues, function($a, $b) {
         $numA = isset($a['number']) ? (float) trim((string)$a['number']) : INF;
         $numB = isset($b['number']) ? (float) trim((string)$b['number']) : INF;
@@ -110,22 +87,13 @@ if (!empty($all_issues)) {
         }
         return ((int)($a['id'] ?? 0)) <=> ((int)($b['id'] ?? 0));
     });
-}
 
-$metron_ids = !empty($all_issues) ? array_values(array_filter(array_column($all_issues, 'id'))) : [];
+    $metron_ids = array_values(array_filter(array_column($all_issues, 'id')));
 
-/* -----------------------------------------------------------------
- *  Build CV map (async if too many issues)
- * ----------------------------------------------------------------- */
-$cv_info_batch      = [];
-$collection_status  = [];
-
-if ( $metron_ids && count( $metron_ids ) <= 20 ) {
-     $cv_info_batch = $comic_renderer->build_cv_map_for_series( $title_id, $page );
-}
-
-if ( is_user_logged_in() ) {
-    $collection_status = $comic_renderer->get_collection_status( $metron_ids );
+    if ( is_user_logged_in() ) {
+        $collection_status = $comic_renderer->get_collection_status( $metron_ids );
+    }
+    
 }
 
 /* -----------------------------------------------------------------
@@ -208,8 +176,7 @@ ob_start();
                 <div id="issues-list"
                     data-total="<?php echo esc_attr($total_issues); ?>"
                     data-page="<?php echo esc_attr($page); ?>"
-                    data-title-id="<?php echo esc_attr($title_id); ?>"
-                    data-metron-ids="<?php echo esc_attr(wp_json_encode($metron_ids)); ?>"
+                    data-title-id="<?php echo esc_attr($title_id); ?>"     
                     class="issues-list-container <?php echo (!empty($all_issues) ? 'server-rendered loaded' : ''); ?>">
 
                     <?php if (!empty($all_issues)) : ?>
@@ -217,8 +184,7 @@ ob_start();
                             <ul class="issues-list">
                                 <?php foreach ($all_issues as $issue) : 
                                     if (empty($issue['id'])) continue;
-                                    $metron_id = $issue['id'];
-                                    $cv_issue  = $cv_info_batch[$metron_id] ?? [];
+                                    $metron_id = $issue['id'];                                   
                                 ?>
                                     <?php include $issue_template; ?>
                                 <?php endforeach; ?>
@@ -244,9 +210,8 @@ ob_start();
                 $start = max(1, $page - $range);
                 $end   = min($total_pages, $page + $range);
                 ?>
-                <div id="pagination-wrapper">
                     <?php if ( $total_pages > 1 ) : ?>
-                        <div class="pagination-wrapper">
+                        <div id="pagination-wrapper" class="pagination-wrapper">
                             <p>Page <?php echo $page; ?> of <?php echo $total_pages; ?></p>
                             <?php if ($page > 1) : ?>
                                 <a href="<?php echo esc_url(add_query_arg('page', $page - 1)); ?>" class="page-btn" data-page="<?php echo $page - 1; ?>" data-title-id="<?php echo esc_attr($title_id); ?>">Previous</a>
@@ -260,17 +225,16 @@ ob_start();
                                     <?php echo $i; ?>
                                 </a>
                             <?php endfor; ?>
-                            <?php if ( $page < $total_pages ) : ?>
-                                <a href="<?php echo esc_url(add_query_arg('page', $page + 1)); ?>"
-                                   class="page-btn"
-                                   data-page="<?php echo $page + 1; ?>"
-                                   data-title-id="<?php echo esc_attr( $title_id ); ?>"
-                                   data-search="<?php echo esc_attr( $search ); ?>"
-                                   data-per-page="<?php echo esc_attr( $per_page ); ?>">Next</a>
+                            <?php if ( $end < $total_pages ) : ?>
+                                <a href="<?php echo esc_url(add_query_arg('page', $end + 1)); ?>"
+                                class="page-btn"
+                                data-page="<?php echo $end + 1; ?>"
+                                data-title-id="<?php echo esc_attr( $title_id ); ?>"
+                                data-search="<?php echo esc_attr( $search ); ?>"
+                                data-per-page="<?php echo esc_attr( $per_page ); ?>">Next</a>
                             <?php endif; ?>
                         </div>
-                    <?php endif; ?>
-                </div>
+                    <?php endif; ?>           
 
             </div>
         </section>
@@ -290,51 +254,5 @@ $main_html = preg_replace_callback(
 set_transient( $cache_key, $main_html, 24 * HOUR_IN_SECONDS );
 echo $main_html;
 ?>
-
-<!-- SINGLE CV FETCH SCRIPT -->
-<script>
-(function(){
-    'use strict';
-
-    function hideSpinner(){
-        const list = document.getElementById('issues-list');
-        const spin = document.getElementById('loading-spinner');
-        if(!list||!spin) return;
-        if(list.querySelector('li.issue-item,.no-results')){
-            spin.classList.add('hidden');
-            list.classList.add('loaded');
-        }
-    }
-    hideSpinner();
-    window.addEventListener('pageshow', hideSpinner);
-    window.addEventListener('focus', hideSpinner);
-
-    const listElement = document.getElementById('issues-list');
-    const metronIds = listElement ? JSON.parse(listElement.getAttribute('data-metron-ids') || '[]') : [];
-    const nonce = '<?php echo wp_create_nonce( 'comicbooks_fetchers_data' ); ?>';
-
-    if (!metronIds.length) return;
-
-    // Only fetch if more than 10 issues or CV info not preloaded
-    setTimeout(() => {
-        fetch(ajaxurl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                action: 'load_comic_vine_batch',
-                nonce: nonce,
-                metron_ids: metronIds.join(',')
-            })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                console.log('CV data loaded:', data.data.cv_data);
-            }
-        });
-    }, 500);
-    
-})();
-</script>
 
 <?php get_footer(); ?>

@@ -50,11 +50,14 @@ if ( $selected_publisher > 0 ) {
         $search,
         $letter,
         false
-    );
+    );  
+
     $initial_data['items']         = $series_data['items']   ?? [];
     $initial_data['total']         = $series_data['total']   ?? 0;
     $initial_data['type']          = 'series';
     $initial_data['per_page']      = $series_data['per_page'] ?? $per_page;
+    $initial_data['is_total_exact'] = $series_data['is_total_exact'] ?? true;
+    $initial_data['scan_complete']  = $series_data['scan_complete']  ?? true;
 
     $publisher_info = $comic_renderer->get_publisher_info($selected_publisher);
 

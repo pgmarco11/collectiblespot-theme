@@ -62,7 +62,7 @@
                     <!-- Signin Modal Link -->
                     <form class="d-flex w-100 mx-auto" style="max-width: 400px;" action="<?php echo esc_url(home_url('/')); ?>" method="get">
                         <div class="input-group" >
-                            <input class="form-control" type="search" placeholder="Search Collectibles" aria-label="Search" name="s" value="<?php echo get_search_query(); ?>">
+                            <input class="form-control" type="search" placeholder="Search Auctions & Collectibles" aria-label="Search" name="s" value="<?php echo get_search_query(); ?>">
                             <button class="input-group-text btn" type="submit">
                                 <i class="bi bi-search"></i>
                             </button>

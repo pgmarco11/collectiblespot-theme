@@ -108,11 +108,15 @@
                         z-index: 1;
                     }     
                     
-                    .entry-thumbnail {                        
+                    .entry-thumbnail { 
+                        max-width: 200px;
+                        width: 100%;
+                                           
                         a {
                             img {
                                 max-height: 255px;
-                                max-width: 230px;
+                                max-width: 100%;
+                                width: auto;
                                 padding: .15rem;                          
                                 background-color: #fff;
                                 border: 1px solid #000;                            
