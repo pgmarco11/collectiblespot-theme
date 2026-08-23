@@ -50,6 +50,17 @@ $type = $is_series_view
      
  } else {
 
+    /*
+    * Used by the publisher dropdown.
+    */
+    $dropdown_data = $comic_renderer->get_publishers(
+        '',
+        1,
+        1000,
+        'all'
+    );
+
+
     $bypass_cache = ($page > 1);
 
      $data = $comic_renderer->get_enriched_publishers(
@@ -60,7 +71,7 @@ $type = $is_series_view
     );
 
  }
-
+ $dropdown_publishers = $dropdown_data['items'] ?? [];
  
  /* -----------------------------------------------------------------
   * Initial render data
@@ -86,17 +97,7 @@ $type = $is_series_view
      ? $comic_renderer->get_publisher_info($selected_publisher)
      : [];
  
- /*
-  * Used by the publisher dropdown.
-  */
- $dropdown_data = $comic_renderer->get_publishers(
-     '',
-     1,
-     1000,
-     'all'
- );
- 
- $dropdown_publishers = $dropdown_data['items'] ?? [];
+
 
 /* -----------------------------------------------------------------
  *  Output
@@ -117,27 +118,35 @@ get_header();
                         <span class="current-category"><?php echo esc_html( $publisher_info['name'] ); ?></span>
                     <?php endif; ?>
                 </nav>
-                <h1 class="page-title"><span><?php the_title(); ?></span></h1>
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 w-100">
+                    <h1 class="page-title d-flex justify-content-start mb-0">
+                        <span><?php the_title(); ?></span>
+                    </h1>
+
+                    <div class="search-wrapper d-flex justify-content-end ms-md-auto">
+                        <input
+                            type="text"
+                            id="comic-search"
+                            value="<?php echo esc_attr($search); ?>"
+                            placeholder="<?php echo $is_series_view ? 'Search titles...' : 'Search publishers...'; ?>"
+                            aria-label="Search">
+                    </div>
+                </div>
             </header>
 
             <!-- FILTERS -->
             <div class="page-filters">
-                <select name="publisher_id" id="publisher-select" aria-label="Select Publisher">
-                    <option value="">Select a publisher</option>
-                    <?php foreach ( $dropdown_publishers as $pub ) : ?>
-                        <?php if ( empty( $pub['id'] ) || empty( $pub['name'] ) ) continue; ?>
-                        <option value="<?php echo esc_attr( $pub['id'] ); ?>" <?php selected( $selected_publisher, $pub['id'] ); ?>>
-                            <?php echo esc_html( $pub['name'] ); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
-                <div class="search-wrapper">
-                    <input type="text" id="comic-search"
-                        value="<?php echo esc_attr($search); ?>"
-                        placeholder="<?php echo $selected_publisher ? 'Search titles...' : 'Search publishers...'; ?>"
-                        aria-label="Search">
-                </div>
+                <?php if(!$is_series_view): ?>
+                    <select name="publisher_id" id="publisher-select" aria-label="Select Publisher">
+                        <option value="">Select a publisher</option>
+                        <?php foreach ( $dropdown_publishers as $pub ) : ?>
+                            <?php if ( empty( $pub['id'] ) || empty( $pub['name'] ) ) continue; ?>
+                            <option value="<?php echo esc_attr( $pub['id'] ); ?>" <?php selected( $selected_publisher, $pub['id'] ); ?>>
+                                <?php echo esc_html( $pub['name'] ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                <?php endif; ?>
             </div>
 
             <!-- PUBLISHER INFO -->
