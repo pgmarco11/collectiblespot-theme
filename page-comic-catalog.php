@@ -59,7 +59,7 @@ $type = $is_series_view
         1000,
         'all'
     );
-
+    $dropdown_publishers = $dropdown_data['items'] ?? [];
 
     $bypass_cache = ($page > 1);
 
@@ -71,7 +71,6 @@ $type = $is_series_view
     );
 
  }
- $dropdown_publishers = $dropdown_data['items'] ?? [];
  
  /* -----------------------------------------------------------------
   * Initial render data
