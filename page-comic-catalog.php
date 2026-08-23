@@ -22,7 +22,7 @@ $letter = $letter ?: 'all';
 
 $search = sanitize_text_field(get_query_var('search', ''));
 $selected_publisher = isset($_GET['publisher_id'])
-    ? absint($_GET['publisher_id'])
+    ? absint(wp_unslash($_GET['publisher_id']))
     : 0;
 $is_series_view = $selected_publisher > 0;
 $type = $is_series_view
@@ -38,13 +38,6 @@ $type = $is_series_view
 /* -----------------------------------------------------------------
 * Fetch data
 * ----------------------------------------------------------------- */
-
-$dropdown_data = $comic_renderer->get_publishers(
-    '',
-    1,
-    1000,
-    'all'
-);
  
  if ($is_series_view) {
      $data = $comic_renderer->get_series(
