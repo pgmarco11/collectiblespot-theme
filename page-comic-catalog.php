@@ -35,9 +35,16 @@ $type = $is_series_view
 
  $comic_renderer = new ComicRenderer();
 
- /* -----------------------------------------------------------------
-  * Fetch data
-  * ----------------------------------------------------------------- */
+/* -----------------------------------------------------------------
+* Fetch data
+* ----------------------------------------------------------------- */
+
+$dropdown_data = $comic_renderer->get_publishers(
+    '',
+    1,
+    1000,
+    'all'
+);
  
  if ($is_series_view) {
      $data = $comic_renderer->get_series(
@@ -47,14 +54,20 @@ $type = $is_series_view
          $search,
          $letter
      );
+     
  } else {
-     $data = $comic_renderer->get_publishers(
-         $search,
-         $page,
-         $per_page,
-         $letter
-     );
+
+    $bypass_cache = ($page > 1);
+
+     $data = $comic_renderer->get_enriched_publishers(
+        $page,
+        10,
+        $letter,
+        $bypass_cache
+    );
+
  }
+
  
  /* -----------------------------------------------------------------
   * Initial render data
@@ -146,7 +159,7 @@ get_header();
                         <div class="publisher-description">
                             <h2><?php echo esc_html( $publisher_info['name'] ); ?></h2>
                             <p><strong>Founded:</strong> <?php echo esc_html( $publisher_info['founded'] ?? 'N/A' ); ?></p>
-                            <p><strong>Description:</strong> <?php echo wp_kses_post( $publisher_info['desc'] ?? 'No description available.' ); ?></p>
+                            <p><strong>Description:</strong> <?php echo esc_html( $publisher_info['desc'] ?? 'No description available.' ); ?></p>
                         </div>
                     </div>
                 </div>
