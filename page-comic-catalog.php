@@ -18,68 +18,79 @@ $per_page = 10;
 $page =   max(1, intval(get_query_var('page')) ?: 1);
 $letter = sanitize_text_field(get_query_var('letter', 'all'));
 $letter = urldecode($letter);
+$letter = $letter ?: 'all';
+
 $search = sanitize_text_field(get_query_var('search', ''));
-$selected_publisher = intval(get_query_var('publisher_id', 0));
+$selected_publisher = isset($_GET['publisher_id'])
+    ? absint($_GET['publisher_id'])
+    : 0;
+$is_series_view = $selected_publisher > 0;
+$type = $is_series_view
+        ? 'books'
+        : 'publishers';
 
 /* -----------------------------------------------------------------
- *  Renderer
+ * Renderer
  * ----------------------------------------------------------------- */
-$comic_renderer = new ComicRenderer();
 
-/* -----------------------------------------------------------------
- *  Initial data
- * ----------------------------------------------------------------- */
-    $initial_data = [
-        'items'        => [],
-        'total'        => 0,
-        'type'         => 'publishers',
-        'per_page'     => $per_page,
-        'page'         => $page,
-        'letter'       => $letter ?: 'all',
-        'publisher_id' => $selected_publisher,
-        'search'       => $search,
-    ];
-/* -----------------------------------------------------------------
- *  Fetch data
- * ----------------------------------------------------------------- */
-if ( $selected_publisher > 0 ) {
-    $series_data = $comic_renderer->get_series(
-        $selected_publisher,
-        $page,
-        $per_page,
-        $search,
-        $letter,
-        false
-    );  
+ $comic_renderer = new ComicRenderer();
 
-    $initial_data['items']         = $series_data['items']   ?? [];
-    $initial_data['total']         = $series_data['total']   ?? 0;
-    $initial_data['type']          = 'series';
-    $initial_data['per_page']      = $series_data['per_page'] ?? $per_page;
-    $initial_data['is_total_exact'] = $series_data['is_total_exact'] ?? true;
-    $initial_data['scan_complete']  = $series_data['scan_complete']  ?? true;
-
-    $publisher_info = $comic_renderer->get_publisher_info($selected_publisher);
-
-} elseif ( empty($search) ) {
-
-    $letter = $letter ?: 'all';
-    $bypass_cache = ($page > 1);
-
-    $pub_data = $comic_renderer->get_enriched_publishers(
-        $page,
-        10,
-        $letter,
-        $bypass_cache
-    );
-
-    $initial_data['items']     = $pub_data['items'] ?? [];
-    $initial_data['total']     = $pub_data['total'] ?? 0;
-    $initial_data['type']     = 'publishers';
-    $initial_data['per_page']  = 10;
-    
-}
-$dropdown_publishers = $comic_renderer->get_publishers( '', 1, 1000, 'all' )['items'] ?? [];
+ /* -----------------------------------------------------------------
+  * Fetch data
+  * ----------------------------------------------------------------- */
+ 
+ if ($is_series_view) {
+     $data = $comic_renderer->get_series(
+         $selected_publisher,
+         $page,
+         $per_page,
+         $search,
+         $letter
+     );
+ } else {
+     $data = $comic_renderer->get_publishers(
+         $search,
+         $page,
+         $per_page,
+         $letter
+     );
+ }
+ 
+ /* -----------------------------------------------------------------
+  * Initial render data
+  * ----------------------------------------------------------------- */
+ 
+ $initial_data = [
+     'items'            => $data['items'] ?? [],
+     'total'            => (int) ($data['total'] ?? 0),
+     'type'             => $is_series_view ? 'books' : 'publishers',
+     'page'             => $page,
+     'per_page'         => (int) ($data['per_page'] ?? $per_page),
+     'letter'           => $letter,
+     'publisher_id'     => $is_series_view ? $selected_publisher : 0,
+     'search'           => $search,
+     'is_total_exact'   => $data['is_total_exact'] ?? true,
+     'scan_complete'    => $data['scan_complete'] ?? true,
+ ];
+ 
+ /*
+  * Only request publisher details when a real publisher is selected.
+  */
+ $publisher_info = $is_series_view
+     ? $comic_renderer->get_publisher_info($selected_publisher)
+     : [];
+ 
+ /*
+  * Used by the publisher dropdown.
+  */
+ $dropdown_data = $comic_renderer->get_publishers(
+     '',
+     1,
+     1000,
+     'all'
+ );
+ 
+ $dropdown_publishers = $dropdown_data['items'] ?? [];
 
 /* -----------------------------------------------------------------
  *  Output
@@ -140,24 +151,70 @@ get_header();
                     </div>
                 </div>
             <?php endif; ?>
+
+            <?php
+                $letter_url_args = [
+                    'page' => 1,
+                ];
+
+                if ($is_series_view) {
+                    $letter_url_args['publisher_id'] = $selected_publisher;
+                }
+            ?>
                   
             <!-- LETTER FILTER -->
             <div id="letter-buttons" class="filters letter-filter" style="display: flex;">
-                <a href="<?php echo esc_url( add_query_arg( array( 'letter' => 'all', 'page' => 1, 'publisher_id' => $selected_publisher ), get_permalink() ) ); ?>" 
-                   class="letter-btn <?php echo $letter === 'all' ? 'active' : ''; ?>" data-letter="all">All</a>
-                <?php foreach ( range( 'A', 'Z' ) as $l ) : ?>
-                    <a href="<?php echo esc_url( add_query_arg( array( 'letter' => $l, 'page' => 1, 'publisher_id' => $selected_publisher ), get_permalink() ) ); ?>" 
-                       class="letter-btn <?php echo $letter === $l ? 'active' : ''; ?>" data-letter="<?php echo $l; ?>">
-                        <?php echo $l; ?>
+                    <a
+                        href="<?php
+                            echo esc_url(
+                                add_query_arg(
+                                    array_merge(
+                                        $letter_url_args,
+                                        ['letter' => 'all']
+                                    ),
+                                    get_permalink()
+                                )
+                            );
+                        ?>"
+                        class="letter-btn <?php echo $letter === 'all' ? 'active' : ''; ?>"
+                        data-letter="all">
+                        All
                     </a>
-                <?php endforeach; ?>
-                <a href="<?php echo esc_url( add_query_arg( array(
-                    'letter' => rawurlencode('#'),
-                    'page' => 1,
-                    'publisher_id' => $selected_publisher
-                ), get_permalink() ) ); ?>" 
-                class="letter-btn <?php echo $letter === '#' ? 'active' : ''; ?>" data-letter="#">#</a>
-            </div>
+                    <?php foreach (range('A', 'Z') as $l) : ?>
+                        <a
+                            href="<?php
+                                echo esc_url(
+                                    add_query_arg(
+                                        array_merge(
+                                            $letter_url_args,
+                                            ['letter' => $l]
+                                        ),
+                                        get_permalink()
+                                    )
+                                );
+                            ?>"
+                            class="letter-btn <?php echo $letter === $l ? 'active' : ''; ?>"
+                            data-letter="<?php echo esc_attr($l); ?>">
+                            <?php echo esc_html($l); ?>
+                        </a>
+                    <?php endforeach; ?>
+                    <a
+                        href="<?php
+                            echo esc_url(
+                                add_query_arg(
+                                    array_merge(
+                                        $letter_url_args,
+                                        ['letter' => '#']
+                                    ),
+                                    get_permalink()
+                                )
+                            );
+                        ?>"
+                        class="letter-btn <?php echo $letter === '#' ? 'active' : ''; ?>"
+                        data-letter="#">
+                        #
+                    </a>
+                </div>
 
             
             <!-- RENDER LIST -->
