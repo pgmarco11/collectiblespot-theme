@@ -69,12 +69,23 @@ if ( isset( $data['error'] ) ) {
  * ----------------------------------------------------------------- */
 $series             = $data['series'] ?? [];
 $issue_list         = $data['issue_list'] ?? [];
-$all_issues         = isset($issue_list['results']) && is_array($issue_list['results']) ? $issue_list['results'] : [];
+$all_issues         = isset($issue_list['results']) && is_array($issue_list['results'])
+    ? $issue_list['results']
+    : [];
+
 $total_issues       = (int) ($issue_list['count'] ?? 0);
 $metron_ids         = [];
 $collection_status  = [];
 $per_page           = 10;
 $total_pages        = max(1, (int) ceil($total_issues / $per_page));
+
+/*
+ * Build Comic Vine info for server-rendered issues.
+ */
+$client = new MetronClient();
+$data_service = new ComicDataService($client);
+
+$cv_info_batch = $data_service->get_cv_info_batch($all_issues);
 
 // Defensive re-sort by issue number
 if (!empty($all_issues)) {
@@ -182,12 +193,19 @@ ob_start();
                     <?php if (!empty($all_issues)) : ?>
 
                             <ul class="issues-list">
-                                <?php foreach ($all_issues as $issue) : 
-                                    if (empty($issue['id'])) continue;
-                                    $metron_id = $issue['id'];                                   
-                                ?>
-                                    <?php include $issue_template; ?>
-                                <?php endforeach; ?>
+                            <?php foreach ($all_issues as $issue) :
+
+                                if (empty($issue['id'])) {
+                                    continue;
+                                }
+
+                                $metron_id = (int) $issue['id'];
+
+                                $cv_issue = $cv_info_batch[$metron_id] ?? [];
+
+                                include $issue_template;
+
+                                endforeach; ?>
                             </ul>
 
                     <?php else : ?>
