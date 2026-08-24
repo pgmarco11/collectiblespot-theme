@@ -82,10 +82,25 @@ $total_pages        = max(1, (int) ceil($total_issues / $per_page));
 /*
  * Build Comic Vine info for server-rendered issues.
  */
-$client = new MetronClient();
+$client       = new MetronClient();
 $data_service = new ComicDataService($client);
 
-$cv_info_batch = $data_service->get_cv_info_batch($all_issues);
+/*
+ * Only request Comic Vine information when Metron does not already
+ * provide an issue cover.
+ */
+$issues_needing_cv = array_values(
+    array_filter(
+        $all_issues,
+        static function ($issue) {
+            return empty($issue['image']);
+        }
+    )
+);
+
+$cv_info_batch = !empty($issues_needing_cv)
+    ? $data_service->get_cv_info_batch($issues_needing_cv)
+    : [];
 
 // Defensive re-sort by issue number
 if (!empty($all_issues)) {
