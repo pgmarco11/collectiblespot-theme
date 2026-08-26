@@ -263,10 +263,9 @@ ob_start();
 
 <?php
 /* -----------------------------------------------------------------
- *  Cache rendered HTML
+ *  Output rendered HTML
  * ----------------------------------------------------------------- */
-$main_html = ob_get_clean();
-echo $main_html;
+echo ob_get_clean();
 ?>
 
 <?php get_footer(); ?>

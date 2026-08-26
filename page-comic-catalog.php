@@ -91,11 +91,74 @@ $type = $is_series_view
  /*
   * Only request publisher details when a real publisher is selected.
   */
- $publisher_info = $is_series_view
-     ? $comic_renderer->get_publisher_info($selected_publisher)
-     : [];
+    $publisher_info = $is_series_view
+        ? $comic_renderer->get_publisher_info($selected_publisher)
+        : [];
  
-
+    $publisher_description = (string) (
+        $publisher_info['desc'] ?? ''
+    );
+    
+    /*
+     * Decode any encoded HTML.
+     */
+    $publisher_description = html_entity_decode(
+        $publisher_description,
+        ENT_QUOTES | ENT_HTML5,
+        'UTF-8'
+    );
+    
+    /*
+     * Insert readable separators before removing HTML.
+     */
+    $publisher_description = preg_replace(
+        [
+            '#<br\s*/?>#i',
+            '#</p\s*>#i',
+            '#</h[1-6]\s*>#i',
+            '#</li\s*>#i',
+            '#</(?:div|ul|ol)\s*>#i',
+        ],
+        [
+            ' ',
+            ' ',
+            ': ',
+            ' ',
+            ' ',
+        ],
+        $publisher_description
+    );
+    
+    /*
+     * Remove all remaining markup.
+     */
+    $publisher_description = wp_strip_all_tags(
+        $publisher_description,
+        true
+    );
+    
+    /*
+     * Normalize whitespace and remove a trailing separator.
+     */
+    $publisher_description = preg_replace(
+        '/\s+/u',
+        ' ',
+        $publisher_description
+    );
+    
+    $publisher_description = trim(
+        $publisher_description
+    );
+    
+    $publisher_description = rtrim(
+        $publisher_description,
+        " ;"
+    );
+    
+    if ($publisher_description === '') {
+        $publisher_description =
+            'No description available.';
+    }
 
 /* -----------------------------------------------------------------
  *  Output
@@ -159,7 +222,12 @@ get_header();
                         <div class="publisher-description">
                             <h2><?php echo esc_html( $publisher_info['name'] ); ?></h2>
                             <p><strong>Founded:</strong> <?php echo esc_html( $publisher_info['founded'] ?? 'N/A' ); ?></p>
-                            <p><strong>Description:</strong> <?php echo esc_html( $publisher_info['desc'] ?? 'No description available.' ); ?></p>
+                            <p>
+                                <strong>Description:</strong>
+                                <?php echo esc_html(
+                                    $publisher_description
+                                ); ?>
+                            </p>
                         </div>
                     </div>
                 </div>
