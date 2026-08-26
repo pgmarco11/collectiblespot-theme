@@ -61,13 +61,12 @@ $type = $is_series_view
     );
     $dropdown_publishers = $dropdown_data['items'] ?? [];
 
-    $bypass_cache = false;
-
-     $data = $comic_renderer->get_enriched_publishers(
+    $data = $comic_renderer->get_publishers(
+        $search,
         $page,
         10,
         $letter,
-        $bypass_cache
+        false
     );
 
  }

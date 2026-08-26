@@ -38,19 +38,6 @@ if ( ! $title_id ) {
 }
 
 /* -----------------------------------------------------------------
- *  Cache check for page HTML
- * ----------------------------------------------------------------- */
-$cache_key = "metron:issue_list_html:{$title_id}:{$page}:{$search}";
-$cached_html = get_transient( $cache_key );
-
-if ($cached_html !== false && empty($search)) {
-    get_header();
-    echo $cached_html;
-    get_footer();
-    return;
-}
-
-/* -----------------------------------------------------------------
  *  Fetch series & issues
  * ----------------------------------------------------------------- */
 $comic_renderer = new ComicRenderer();
@@ -279,12 +266,6 @@ ob_start();
  *  Cache rendered HTML
  * ----------------------------------------------------------------- */
 $main_html = ob_get_clean();
-$main_html = preg_replace_callback(
-    '#(<(script|style)[^>]*>)(.*?)(</\\2>)#is',
-    function ( $m ) { return $m[1] . $m[3] . $m[4]; },
-    preg_replace( ['/>\s+</', '/\s+/'], ['><', ' '], $main_html )
-);
-set_transient( $cache_key, $main_html, 24 * HOUR_IN_SECONDS );
 echo $main_html;
 ?>
 
