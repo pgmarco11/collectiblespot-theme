@@ -95,9 +95,10 @@ $type = $is_series_view
         ? $comic_renderer->get_publisher_info($selected_publisher)
         : [];
  
-    $publisher_description = (string) (
-        $publisher_info['desc'] ?? ''
-    );
+    $publisher_description =
+        $comic_renderer->normalize_publisher_description(
+            $publisher_info['desc'] ?? ''
+        );
     
     /*
      * Decode any encoded HTML.
