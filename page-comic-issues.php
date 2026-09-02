@@ -44,9 +44,97 @@ $comic_renderer = new ComicRenderer();
 $data           = $comic_renderer->get_series_issues( $title_id, $page, $search );
 
 
-if ( isset( $data['error'] ) ) {
+if (isset($data['error'])) {
+    $temporary = !empty($data['temporary_error']);
+
+    $retry_after = max(
+        1,
+        (int) ($data['retry_after'] ?? 2)
+    );
+
+    $retry_count = isset($_GET['metron_retry'])
+        ? absint(wp_unslash($_GET['metron_retry']))
+        : 0;
+
+    // Automatic retries stop after two page reloads.
+    $can_retry = $temporary && $retry_count < 2;
+
+    $retry_url = add_query_arg(
+        [
+            'title_id' => $title_id,
+            'page' => $page,
+            'search' => $search,
+        ],
+        home_url('/comic-catalog/issues/')
+    );
+
+    $automatic_retry_url = add_query_arg(
+        'metron_retry',
+        $retry_count + 1,
+        $retry_url
+    );
+
+    if ($temporary) {
+        if (!defined('DONOTCACHEPAGE')) {
+            define('DONOTCACHEPAGE', true);
+        }
+
+        status_header(503);
+        nocache_headers();
+        header('Retry-After: ' . $retry_after);
+    }
+
     get_header();
-    echo '<div class="container"><p class="no-results">Error: ' . esc_html( $data['error'] ) . '</p></div>';
+    ?>
+
+    <div class="container" id="metron-retry-message">
+        <p class="no-results" role="status">
+            <?php
+            if ($can_retry) {
+                echo esc_html(
+                    'The comic service is temporarily busy. Retrying shortly…'
+                );
+            } elseif ($temporary) {
+                echo esc_html(
+                    'The comic service is still busy. Please try again shortly.'
+                );
+            } else {
+                echo esc_html('Error: ' . $data['error']);
+            }
+            ?>
+        </p>
+
+        <p>
+            <a href="<?php echo esc_url($retry_url); ?>">
+                Try again
+            </a>
+        </p>
+    </div>
+
+    <?php if ($can_retry) : ?>
+        <script>
+        window.setTimeout(function () {
+            window.location.replace(
+                <?php
+                echo wp_json_encode(
+                    $automatic_retry_url,
+                    JSON_HEX_TAG |
+                    JSON_HEX_AMP |
+                    JSON_HEX_APOS |
+                    JSON_HEX_QUOT
+                );
+                ?>
+            );
+        }, <?php
+            echo (int) min(
+                2147483647,
+                $retry_after * 1000
+            );
+        ?>);
+        </script>
+    <?php endif; ?>
+
+    <?php
     get_footer();
     return;
 }
