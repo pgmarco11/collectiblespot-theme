@@ -56,7 +56,7 @@ $type = $is_series_view
     $dropdown_data = $comic_renderer->get_publishers(
         '',
         1,
-        1000,
+        PHP_INT_MAX,
         'all'
     );
     $dropdown_publishers = $dropdown_data['items'] ?? [];
@@ -70,7 +70,19 @@ $type = $is_series_view
     );
 
  }
- 
+
+ // Avoid retaining the initial loading page in a full-page cache.
+    if (
+        !$is_series_view &&
+        empty($data['ready'])
+    ) {
+        if (!defined('DONOTCACHEPAGE')) {
+            define('DONOTCACHEPAGE', true);
+        }
+
+        nocache_headers();
+    }
+    
  /* -----------------------------------------------------------------
   * Initial render data
   * ----------------------------------------------------------------- */
