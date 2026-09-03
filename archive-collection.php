@@ -37,7 +37,7 @@
                 <?php if (!empty($publishers)) : ?>
 
                     <div class="collection-filters mb-4">
-                        <a href="?publisher=all" class="btn">All</a>
+                        <a href="/my-collection/" class="btn">All</a>
 
                         <?php foreach ($publishers as $publisher): ?>
                             <a href="?publisher=<?php echo esc_attr($publisher->slug); ?>" class="btn">
