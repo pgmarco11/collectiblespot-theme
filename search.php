@@ -28,7 +28,7 @@
         
                     ?>
                         <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-                            <div class="entry-wrapper d-flex gap-3 align-items-start">
+                            <div class="entry-wrapper d-flex gap-4 align-items-start">
                                 <?php if (has_post_thumbnail()) : ?>
                                     <div class="entry-thumbnail">
                                         <a href="<?php the_permalink(); ?>">

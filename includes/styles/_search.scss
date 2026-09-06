@@ -111,13 +111,17 @@
                         }
                     }
                     
-                    .entry-thumbnail {                        
+                    .entry-thumbnail {  
+                        max-width: 250px;
+                        width: 100%;  
+
                         a {
                             img {
-                                max-height: 250px;
-                                max-width: 190px;
+                                max-height: 255px;
+                                max-width: 100%;
+                                width: auto;
                                 padding: .15rem;  
-                                 background-color: #fff;
+                                background-color: #fff;
                                 border: 1px solid #000;                            
                             }
                         }
