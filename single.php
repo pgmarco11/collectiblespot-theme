@@ -34,54 +34,108 @@ if (have_posts()) :
             ?>
             <!-- Start article container with post ID and classes -->
             <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-
+             
                 <!-- Breadcrumb navigation -->
-                <nav class="breadcrumb mb-4">                    
-                    <?php
-                    // Get all categories for the current post
-                    $categories = get_the_category();
+            <nav
+                class="category-breadcrumbs"
+                aria-label="<?php esc_attr_e('Breadcrumb', 'collectibles'); ?>"
+            >
+                <?php
+                $categories = get_the_category();
 
-                    // Build breadcrumb trail if categories exist
-                    if ($categories && !is_wp_error($categories)) {
-                        $deepest = null;
-                        $max_depth = 0;
+                if ($categories && ! is_wp_error($categories)) {
+                    $deepest  = null;
+                    $max_depth = -1;
 
-                        // Find the deepest category in the hierarchy
-                        foreach ($categories as $cat) {
-                            $depth = 0;
-                            $parent = $cat->parent;
-                            // Calculate category depth by traversing parent categories
-                            while ($parent != 0) {
-                                $depth++;
-                                $parent = get_category($parent)->parent;
+                    /*
+                    * Find the deepest assigned category.
+                    */
+                    foreach ($categories as $category) {
+                        $depth     = 0;
+                        $parent_id = $category->parent;
+
+                        while ($parent_id) {
+                            $parent = get_category($parent_id);
+
+                            if (! $parent || is_wp_error($parent)) {
+                                break;
                             }
-                            if ($depth > $max_depth) {
-                                $max_depth = $depth;
-                                $deepest = $cat;
-                            }
+
+                            $depth++;
+                            $parent_id = $parent->parent;
                         }
 
-                        // Build array of categories for breadcrumb trail
-                        $breadcrumb_cats = [];
-                        while ($deepest) {
-                            $breadcrumb_cats[] = $deepest;
-                            if ($deepest->parent == 0) break;
-                            $deepest = get_category($deepest->parent);
-                        }
-
-                        // Reverse and limit to 3 categories for breadcrumbs
-                        $breadcrumb_cats = array_reverse($breadcrumb_cats);
-                        $breadcrumb_cats = array_slice($breadcrumb_cats, 0, 3);
-
-                        // Output breadcrumb links
-                        foreach ($breadcrumb_cats as $cat) {
-                            echo '<a class="breadcrumb-item" href="' . esc_url(get_category_link($cat->term_id)) . '">' . esc_html($cat->name) . '</a>';
+                        if ($depth > $max_depth) {
+                            $max_depth = $depth;
+                            $deepest   = $category;
                         }
                     }
-                    ?>
-                    <!-- Current page title in breadcrumb -->
-                    <span class="breadcrumb-item active" aria-current="page"><?php the_title(); ?></span>
-                </nav>
+
+                    /*
+                    * Build the category trail from the root category
+                    * to the deepest assigned category.
+                    */
+                    $breadcrumb_categories = [];
+
+                    while ($deepest && ! is_wp_error($deepest)) {
+                        $breadcrumb_categories[] = $deepest;
+
+                        if (! $deepest->parent) {
+                            break;
+                        }
+
+                        $deepest = get_category($deepest->parent);
+                    }
+
+                    $breadcrumb_categories = array_reverse(
+                        $breadcrumb_categories
+                    );
+
+                    /*
+                    * Keep the breadcrumb reasonably short.
+                    */
+                    $breadcrumb_categories = array_slice(
+                        $breadcrumb_categories,
+                        0,
+                        3
+                    );
+
+                    foreach ($breadcrumb_categories as $index => $category) {
+                        if ($index > 0) {
+                            ?>
+                            <span class="separator" aria-hidden="true">➤</span>
+
+                            <span class="category">
+                                <a href="<?php echo esc_url(
+                                    get_category_link($category->term_id)
+                                ); ?>">
+                                    <?php echo esc_html($category->name); ?>
+                                </a>
+                            </span>
+                            <?php
+                        } else {
+                            ?>
+                            <a href="<?php echo esc_url(
+                                get_category_link($category->term_id)
+                            ); ?>">
+                                <?php echo esc_html($category->name); ?>
+                            </a>
+                            <?php
+                        }
+                    }
+
+                    if ($breadcrumb_categories) {
+                        ?>
+                        <span class="separator" aria-hidden="true">➤</span>
+                        <?php
+                    }
+                }
+                ?>
+
+                <span class="current-category" aria-current="page">
+                    <?php the_title(); ?>
+                </span>
+            </nav>
 
                 <!-- Post title -->
                 <h1 class="mb-3 page-title"><?php the_title(); ?></h1>

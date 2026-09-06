@@ -1,85 +1,337 @@
-// single post Sections
-.single {
-    main {
-        .body-section {
-            padding: 1rem 5% 0 2.5rem;
-            height: 100%;
+// Single post sections
+.single main {
+    .body-section {
+        padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 3rem;
+        height: 100%;
 
-            .btn {    
-                border: none;
-                font-family: $font-heading;
-                outline: 1px solid #000;
-                font-weight: 500;
-                letter-spacing: .05rem;
-                margin: 0 .75rem 0 0;               
-                text-transform: uppercase;
-                transition: background-color .3s ease;
-            }
+      
+        .category-breadcrumbs {
+            color: $text-color-white;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: left;
             
-            .page-title {
-                    text-align: left;
-            }
-            .post-content {
-                ul {             
-                    margin: 1rem 0;
-                    padding-left: 0 !important;                
-                }
-            }
-            .image img {
-                border: 1px solid $text-color-black;
-            }
-        }
-        .page-section {
-            padding: 1rem 5% 0 2.5rem;
-            height: 100%;
-
-            .page-header {
-                .category-breadcrumbs {
-                    font-size: 1rem;
-                    font-weight: bold;
-                    color: $tertiary-color; 
-                    text-align: left;                 
-                    margin-bottom: 1rem;
-
-                    .category a {
-                        background-color: transparent; 
-                        color: $text-color-white;  
-                    }
+                /*
+                 * The first/root breadcrumb matches the orange
+                 * Publishers button used by the comic catalog.
+                 */
+                > a {
+                    background-color: $tertiary-color;
+                    border-radius: 5px;
+                    color: $text-color-black;
+                    padding: .2rem .5rem;
+                    text-decoration: none;
             
-                    a {
-                        color: $text-color-black;
-                        background-color: $tertiary-color;
-                        text-decoration: none;
-                        border-radius: 5px;
-                        padding: .2rem .5rem .2rem;
-            
-                        &:hover {                      
-                            color: $text-color-white;
-                        }
-                    }
-    
-                    span + a {
-                        background-color: transparent; 
-                        color: $text-color-white;     
-                        padding: 0; 
-                        
-                        &:hover {                      
-                            color: $text-color-black;
-                        }
-                    }
-            
-                    .separator {
-                        margin: 0 0.4rem;
-                        text-shadow: 1px 1px 0 $text-color-black;
-                        color: $accent-color;
-                        font-size: 1.2rem;
-                    }
-            
-                    .current-category {
+                    &:hover,
+                    &:focus-visible {
                         color: $text-color-white;
                     }
-                } 
-            }  
+                }
+            
+            /*
+            * Nested category links remain plain white,
+            * matching the comic series breadcrumbs.
+            */
+            .category a {
+                    background-color: transparent;
+                    color: $text-color-white;
+                    padding: 0;
+                    text-decoration: none;
+            
+                    &:hover,
+                    &:focus-visible {
+                        color: $text-color-black;
+                    }
+            }
+            
+            .separator {
+                    color: $accent-color;
+                    display: inline-block;
+                    font-size: 1.2rem;
+                    margin: 0 .4rem;
+                    text-shadow: 1px 1px 0 $text-color-black;
+            }
+            
+            .current-category {
+                    color: $text-color-white;
+            }
+        }
+
+
+        .page-title {
+            color: $text-color-white;
+            letter-spacing: .12rem;
+            margin-bottom: 1.5rem !important;
+            text-align: left;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, .5);
+        }
+
+        .collectible-details {
+            background: var(--wp--preset--color--white);
+            border: .15rem solid $text-color-black;
+            box-shadow:
+                .5rem .5rem 0
+                var(--wp--preset--color--royal-blue);
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            isolation: isolate;
+            margin-bottom: 2.5rem;
+            max-width: 1200px;
+            overflow: hidden;
+            position: relative;
+
+            &::before {
+                background: repeating-radial-gradient(
+                    circle,
+                    var(--wp--preset--color--golden-yellow) 0,
+                    var(--wp--preset--color--golden-yellow) 2px,
+                    transparent 2px,
+                    transparent 10px
+                );
+                content: '';
+                inset: 0;
+                opacity: .08;
+                pointer-events: none;
+                position: absolute;
+                z-index: -1;
+            }
+
+            @media (min-width: $mobile-res-md) {
+                grid-template-columns:
+                    minmax(280px, 48%)
+                    minmax(0, 1fr);
+            }
+        }
+
+        .collectible-details__media {
+            align-items: flex-start;
+            background: rgba($text-color-black, .035);
+            border-bottom: .15rem solid $text-color-black;
+            display: flex;
+            justify-content: center;
+            min-width: 0;
+            padding: clamp(.75rem, 2vw, 1.25rem);
+
+            @media (min-width: $mobile-res-md) {
+                border-bottom: 0;
+                border-right: .1rem solid $text-color-black;
+            }
+        }
+
+        .collectible-details__image {
+            background: $text-color-white;
+            border: 1px solid $text-color-black;
+            display: block;
+            height: auto;
+            max-height: 680px;
+            max-width: 100%;
+            object-fit: contain;
+            width: auto;
+        }
+
+        .collectible-details__placeholder {
+            align-items: center;
+            aspect-ratio: 1;
+            color: rgba($text-color-black, .55);
+            display: flex;
+            flex-direction: column;
+            font-weight: 700;
+            gap: .75rem;
+            justify-content: center;
+            max-width: 500px;
+            width: 100%;
+
+            .bi {
+                font-size: 3rem;
+            }
+        }
+
+        .collectible-details__body {
+            min-width: 0;
+            padding: clamp(1.25rem, 3vw, 2.5rem);
+        }
+
+        .collectible-details__summary {
+            border-bottom: 2px dashed $secondary-color;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .collectible-details__meta {
+            margin: 0 0 1.5rem;
+        }
+
+        .collectible-details__meta-row {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: minmax(6rem, auto) 1fr;
+            padding: .35rem 0;
+
+            dt,
+            dd {
+                margin: 0;
+            }
+
+            dt {
+                font-weight: 700;
+                font-size: 1.45rem;
+            }
+        }
+
+        .collectible-details__meta-row--price dd {
+            color: $secondary-color;
+            font-size: 1.45rem;
+            font-weight: 900;
+        }
+
+        .collectible-details__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .75rem;
+
+            /* Generic Buttons */        
+            button {
+                background-color: var(--wp--preset--color--royal-blue) !important;
+                color: var(--wp--preset--color--white) !important;
+                font-size: var(--wp--preset--font-size--medium) !important;
+            }            
+
+            button:hover {
+                background-color: var(--wp--preset--color--deep-red) !important;
+            }
+
+            .btn {
+                align-items: center;
+                display: inline-flex;
+                gap: .55rem;
+                justify-content: center;
+                margin: 0;
+            }
+        }
+
+        .btn {
+            border: none;
+            outline: 1px solid #000;
+            border-radius: .45rem;
+            box-shadow: .2rem .2rem 0 $text-color-black;
+            font-family: $font-heading;
+            font-weight: 500;
+            letter-spacing: .05rem;
+            margin: 0 .75rem 0 0;
+            text-transform: uppercase;
+            transition:
+                box-shadow .2s ease,
+                transform .2s ease,
+                background-color .2s ease;
+
+            &:hover {
+                box-shadow: .1rem .1rem 0 $text-color-black;
+                transform: translate(.1rem, .1rem);
+            }
+
+            &:focus-visible {
+                box-shadow:
+                    0 0 0 .25rem
+                    rgba($tertiary-color, .45);
+                outline: 2px solid $text-color-black;
+                outline-offset: 2px;
+            }
+        }
+
+        .collectible-details__content {
+            color: $text-color-black;
+
+            > :first-child {
+                margin-top: 0;
+            }
+
+            > :last-child {
+                margin-bottom: 0;
+            }
+
+            h2,
+            h3,
+            h4 {
+                color: $navy-blue;
+                margin-top: 1.5rem;
+            }
+
+            ul,
+            ol {
+                margin: 1rem 0;
+                padding-left: 1.4rem !important;
+            }
+
+            li + li {
+                margin-top: .3rem;
+            }
+
+            a:not(.btn) {
+                text-underline-offset: .18rem;
+            }
+        }
+
+        @media (max-width: $mobile-res-sm) {
+            .collectible-details__actions .btn {
+                width: 100%;
+            }
+
+            .collectible-details__meta-row {
+                gap: .25rem;
+                grid-template-columns: 1fr;
+            }
+        }
+    }
+
+    .page-section {
+        padding: 1rem 5% 0 2.5rem;
+        height: 100%;
+
+        .page-header .category-breadcrumbs {
+            font-size: 1rem;
+            font-weight: bold;
+            color: $tertiary-color;
+            text-align: left;
+            margin-bottom: 1rem;
+
+            .category a {
+                background-color: transparent;
+                color: $text-color-white;
+            }
+
+            a {
+                color: $text-color-black;
+                background-color: $tertiary-color;
+                text-decoration: none;
+                border-radius: 5px;
+                padding: .2rem .5rem;
+
+                &:hover {
+                    color: $text-color-white;
+                }
+            }
+
+            span + a {
+                background-color: transparent;
+                color: $text-color-white;
+                padding: 0;
+
+                &:hover {
+                    color: $text-color-black;
+                }
+            }
+
+            .separator {
+                margin: 0 .4rem;
+                text-shadow: 1px 1px 0 $text-color-black;
+                color: $accent-color;
+                font-size: 1.2rem;
+            }
+
+            .current-category {
+                color: $text-color-white;
+            }
         }
     }
 }
