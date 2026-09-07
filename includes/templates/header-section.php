@@ -5,18 +5,50 @@
             <div class="container">
                 
                         <!-- Search Form -->
-                    <div class="header-tools">                     
-                                <!-- Signin Modal Link -->
-                            <a class="signin-link open-modal" href="#signin-modal">
-                                <div class="signin-icon">
+                        <div class="header-tools">
+                            <?php if (is_user_logged_in()) : ?>
+                                <a
+                                    class="signin-link"
+                                    href="<?php echo esc_url(
+                                        get_post_type_archive_link('collection')
+                                    ); ?>"
+                                >
+                                    <div class="signin-icon">
                                         <i class="bi bi-person-circle"></i>
-                                </div>
-                                <div class="signin-text">                           
-                                        <?php echo esc_html__('My Account', 'collectibles'); ?>
-                                </div>
-                            </a>
+                                    </div>
 
-                    </div>
+                                    <div class="signin-text">
+                                        My Collection
+                                    </div>
+                                </a>
+                            <?php else : ?>
+                                <a
+                                    class="signin-link open-modal"
+                                    href="#signin-modal"
+                                >
+                                    <div class="signin-icon">
+                                        <i class="bi bi-box-arrow-in-right"></i>
+                                    </div>
+
+                                    <div class="signin-text">
+                                        Sign In
+                                    </div>
+                                </a>
+
+                                <a
+                                    class="signin-link"
+                                    href="<?php echo esc_url(home_url('/register/')); ?>"
+                                >
+                                    <div class="signin-icon">
+                                        <i class="bi bi-person-plus"></i>
+                                    </div>
+
+                                    <div class="signin-text">
+                                        Register
+                                    </div>
+                                </a>
+                            <?php endif; ?>
+                        </div>
 
             </div>
         </div>

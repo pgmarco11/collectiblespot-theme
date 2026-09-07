@@ -67,29 +67,43 @@ body {
       background-blend-mode: overlay;
       padding: 3px 0;
 
-      .container {
-        max-width: 97.5%;
+        .container {
+          max-width: 97.5%;
 
-        .header-tools {      
-          .signin-link {
-            color: $text-color-white;
-            display: flex;
-            justify-content: flex-end;
-            text-decoration: none;
-      
-            .signin-icon i {
-              font-size: 24px;
+            .header-tools {
+              display: flex;
+              justify-content: flex-end;
+              align-items: center;
+              gap: 1.25rem;
+          
+              .signin-link {
+                  color: $text-color-white;
+                  display: flex;
+                  align-items: center;
+                  text-decoration: none;
+          
+                  &:hover,
+                  &:focus-visible {
+                      color: $tertiary-color;
+                  }
+          
+                  &:focus-visible {
+                      outline: 2px solid $tertiary-color;
+                      outline-offset: 4px;
+                  }
+          
+                  .signin-icon i {
+                      font-size: 24px;
+                  }
+          
+                  .signin-text {
+                      margin-left: 10px;
+                      align-content: center;
+                  }
+              }
             }
-      
-            .signin-text {
-              margin-left: 10px;
-              align-content: center;
-            }
-          }
         }
-      }
     }
-
     .header-main {
       display: flex;
       align-items: center;
@@ -508,4 +522,5 @@ body {
 @import 'collection';
 @import 'shortcodes';
 @import 'toastify';
+@import 'registration';
 
