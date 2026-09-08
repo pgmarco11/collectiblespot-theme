@@ -9,8 +9,10 @@
                             <?php if (is_user_logged_in()) : ?>
                                 <a
                                     class="signin-link"
-                                    href="<?php echo esc_url(
-                                        get_post_type_archive_link('collection')
+                                    href="<?php 
+                                    $inventory_url = tcs_inventory_url();
+                                    echo esc_url(
+                                        $inventory_url
                                     ); ?>"
                                 >
                                     <div class="signin-icon">
