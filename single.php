@@ -1,201 +1,218 @@
 <?php
-// Get category IDs for 'collectibles', 'auctions', and 'collection' using their slugs
-$collectibles_parent_id = get_category_by_slug('collectibles')->term_id;
-$auctions_parent_id = get_category_by_slug('auctions')->term_id;
+/**
+ * Default single-post template.
+ */
+$collectibles_category = get_category_by_slug( 'collectibles' );
+$auctions_category     = get_category_by_slug( 'auctions' );
 
-// Determine which header to display based on post category
+$collectibles_parent_id = (
+    $collectibles_category &&
+    ! is_wp_error( $collectibles_category )
+)
+    ? (int) $collectibles_category->term_id
+    : 0;
+
+$auctions_parent_id = (
+    $auctions_category &&
+    ! is_wp_error( $auctions_category )
+)
+    ? (int) $auctions_category->term_id
+    : 0;
+
+$is_collectibles_content = false;
+
+if ( $collectibles_parent_id ) {
+    $is_collectibles_content =
+        in_category( $collectibles_parent_id ) ||
+        post_is_in_descendant_category(
+            $collectibles_parent_id
+        );
+}
 if (
-    post_is_in_descendant_category($collectibles_parent_id) || in_category($collectibles_parent_id) ||
-    post_is_in_descendant_category($auctions_parent_id) || in_category($auctions_parent_id)
+    ! $is_collectibles_content &&
+    $auctions_parent_id
 ) {
-    // Load collectibles-specific header for posts in collectibles or auctions categories
-    get_template_part('parts/header', 'collectibles');
-} elseif (
-    get_post_type() === 'collection'
-) {
-    // Load collection-specific header for posts in collection category
-    get_template_part('parts/header', 'collection');
+    $is_collectibles_content =
+        in_category( $auctions_parent_id ) ||
+        post_is_in_descendant_category(
+            $auctions_parent_id
+        );
+}
+
+if ( $is_collectibles_content ) {
+    get_template_part( 'parts/header', 'collectibles' );
 } else {
-    // Load default header for all other cases
     get_header();
 }
 
 // Start the main WordPress loop to display post content
-if (have_posts()) :
-    while (have_posts()) : the_post();
+if ( have_posts() ) : ?>
 
-        // Check if post is in collection category or its descendants
-        if (
-            get_post_type() === 'collection'
-        ) {
-            // Load collection-specific template part for collection category posts
-            get_template_part('parts/single', 'collection');
-        } else {
-            ?>
-            <!-- Start article container with post ID and classes -->
-            <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-             
-                <!-- Breadcrumb navigation -->
+    <?php while ( have_posts() ) : ?>
+        <?php the_post(); ?>
+
+        <article
+            id="post-<?php the_ID(); ?>"
+            <?php post_class(); ?>
+        >
             <nav
                 class="category-breadcrumbs"
-                aria-label="<?php esc_attr_e('Breadcrumb', 'collectibles'); ?>"
+                aria-label="<?php esc_attr_e(
+                    'Breadcrumb',
+                    'collectibles'
+                ); ?>"
             >
                 <?php
                 $categories = get_the_category();
 
-                if ($categories && ! is_wp_error($categories)) {
+                if (
+                    $categories &&
+                    ! is_wp_error( $categories )
+                ) {
                     $deepest  = null;
                     $max_depth = -1;
 
-                    /*
-                    * Find the deepest assigned category.
-                    */
-                    foreach ($categories as $category) {
+                    foreach ( $categories as $category ) {
                         $depth     = 0;
-                        $parent_id = $category->parent;
+                        $parent_id = (int) $category->parent;
 
-                        while ($parent_id) {
-                            $parent = get_category($parent_id);
+                        while ( $parent_id ) {
+                            $parent = get_category( $parent_id );
 
-                            if (! $parent || is_wp_error($parent)) {
+                            if (
+                                ! $parent ||
+                                is_wp_error( $parent )
+                            ) {
                                 break;
                             }
 
                             $depth++;
-                            $parent_id = $parent->parent;
+                            $parent_id = (int) $parent->parent;
                         }
 
-                        if ($depth > $max_depth) {
+                        if ( $depth > $max_depth ) {
                             $max_depth = $depth;
                             $deepest   = $category;
                         }
                     }
 
-                    /*
-                    * Build the category trail from the root category
-                    * to the deepest assigned category.
-                    */
                     $breadcrumb_categories = [];
 
-                    while ($deepest && ! is_wp_error($deepest)) {
+                    while (
+                        $deepest &&
+                        ! is_wp_error( $deepest )
+                    ) {
                         $breadcrumb_categories[] = $deepest;
 
-                        if (! $deepest->parent) {
+                        if ( ! $deepest->parent ) {
                             break;
                         }
 
-                        $deepest = get_category($deepest->parent);
+                        $deepest = get_category(
+                            $deepest->parent
+                        );
                     }
 
-                    $breadcrumb_categories = array_reverse(
-                        $breadcrumb_categories
-                    );
-
-                    /*
-                    * Keep the breadcrumb reasonably short.
-                    */
                     $breadcrumb_categories = array_slice(
-                        $breadcrumb_categories,
+                        array_reverse(
+                            $breadcrumb_categories
+                        ),
                         0,
                         3
                     );
 
-                    foreach ($breadcrumb_categories as $index => $category) {
-                        if ($index > 0) {
+                    foreach (
+                        $breadcrumb_categories as $index => $category
+                    ) {
+                        if ( $index > 0 ) {
                             ?>
-                            <span class="separator" aria-hidden="true">➤</span>
-
-                            <span class="category">
-                                <a href="<?php echo esc_url(
-                                    get_category_link($category->term_id)
-                                ); ?>">
-                                    <?php echo esc_html($category->name); ?>
-                                </a>
-                            </span>
-                            <?php
-                        } else {
-                            ?>
-                            <a href="<?php echo esc_url(
-                                get_category_link($category->term_id)
-                            ); ?>">
-                                <?php echo esc_html($category->name); ?>
-                            </a>
+                            <span
+                                class="separator"
+                                aria-hidden="true"
+                            >➤</span>
                             <?php
                         }
+                        ?>
+                        <span class="category">
+                            <a href="<?php echo esc_url(
+                                get_category_link(
+                                    $category->term_id
+                                )
+                            ); ?>">
+                                <?php echo esc_html(
+                                    $category->name
+                                ); ?>
+                            </a>
+                        </span>
+                        <?php
                     }
 
-                    if ($breadcrumb_categories) {
+                    if ( $breadcrumb_categories ) {
                         ?>
-                        <span class="separator" aria-hidden="true">➤</span>
+                        <span
+                            class="separator"
+                            aria-hidden="true"
+                        >➤</span>
                         <?php
                     }
                 }
                 ?>
 
-                <span class="current-category" aria-current="page">
+                <span
+                    class="current-category"
+                    aria-current="page"
+                >
                     <?php the_title(); ?>
                 </span>
             </nav>
 
-                <!-- Post title -->
-                <h1 class="mb-3 page-title"><?php the_title(); ?></h1>
+            <h1 class="mb-3 page-title">
+                <?php the_title(); ?>
+            </h1>
 
-                <?php
-                // Load appropriate template part based on category
-                if (
-                    post_is_in_descendant_category($collectibles_parent_id) || in_category($collectibles_parent_id) ||
-                    post_is_in_descendant_category($auctions_parent_id) || in_category($auctions_parent_id)
-                ) {
-                    // Load collectibles-specific template for collectibles/auctions posts
-                    get_template_part('parts/single', 'collectibles');
-                } else {
-                    // Load default template for other posts
-                    get_template_part('parts/single', 'default');
-                }
-                ?>
-
-            </article>
             <?php
-        }
+            if ( $is_collectibles_content ) {
+                get_template_part(
+                    'parts/single',
+                    'collectibles'
+                );
+            } else {
+                get_template_part(
+                    'parts/single',
+                    'default'
+                );
+            }
+            ?>
+        </article>
 
-    endwhile;
-else :
-    // Display message if no posts are found
-    ?>
-    <p><?php esc_html_e('Sorry, no content found.', 'collectibles'); ?></p>
+    <?php endwhile; ?>
+
+<?php else : ?>
+
+    <p>
+        <?php esc_html_e(
+            'Sorry, no content found.',
+            'collectibles'
+        ); ?>
+    </p>
+
 <?php endif; ?>
 
 <?php
-// Close section and main tags for specific categories with sidebar
-if (
-    post_is_in_descendant_category($collectibles_parent_id) || in_category($collectibles_parent_id) ||
-    post_is_in_descendant_category($auctions_parent_id) || in_category($auctions_parent_id) ):
+if ( $is_collectibles_content ) :
     ?>
     </section>
     </main>
 
-    <!-- Sidebar -->
     <?php
-        // Check if sidebar should be displayed using Advanced Custom Fields (ACF)
-        $sidebar = get_field('_show_sidebar');
-        if ($sidebar !== false) {
-            // Load sidebar if enabled
-            get_sidebar();
-        }
-    ?>
-<?php
- // Close section and main tags for specific categories without sidebar
- elseif (get_post_type() === 'collection'): ?>
+    $sidebar = get_field( '_show_sidebar' );
 
-    </section>
-    </main>
+    if ( $sidebar !== false ) {
+        get_sidebar();
+    }
+endif;
+?>
 
-<?php endif; ?>
-
-<!-- Close main content wrapper -->
 </div>
 
-<?php
-// Load footer template
-get_footer();
-?>
+<?php get_footer(); ?>

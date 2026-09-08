@@ -31,7 +31,6 @@ if ( ! file_exists( $issue_template ) ) {
 $title_id = isset( $_GET['title_id'] ) ? max( 0, intval( $_GET['title_id'] ) ) : 0;
 $page     = isset( $_GET['page'] ) ? max( 1, intval( $_GET['page'] ) ) : 1;
 $search   = isset( $_GET['search'] ) ? strtolower( trim( wp_strip_all_tags( $_GET['search'] ) ) ) : '';
-$search = strtolower(trim($search));
 
 if ( ! $title_id ) {
     wp_die( '<p>No series selected.</p>' );
@@ -333,13 +332,19 @@ ob_start();
                                     <?php echo $i; ?>
                                 </a>
                             <?php endfor; ?>
-                            <?php if ( $end < $total_pages ) : ?>
-                                <a href="<?php echo esc_url(add_query_arg('page', $end + 1)); ?>"
-                                class="page-btn"
-                                data-page="<?php echo $end + 1; ?>"
-                                data-title-id="<?php echo esc_attr( $title_id ); ?>"
-                                data-search="<?php echo esc_attr( $search ); ?>"
-                                data-per-page="<?php echo esc_attr( $per_page ); ?>">Next</a>
+                            <?php if ($page < $total_pages) : ?>
+                                <?php $next_page = $page + 1; ?>
+
+                                <a
+                                    href="<?php echo esc_url(add_query_arg('page', $next_page)); ?>"
+                                    class="page-btn"
+                                    data-page="<?php echo esc_attr($next_page); ?>"
+                                    data-title-id="<?php echo esc_attr($title_id); ?>"
+                                    data-search="<?php echo esc_attr($search); ?>"
+                                    data-per-page="<?php echo esc_attr($per_page); ?>"
+                                >
+                                    Next
+                                </a>
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>           

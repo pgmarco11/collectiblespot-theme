@@ -164,23 +164,30 @@
 
         .collectible-details__meta-row {
             display: grid;
-            gap: 1rem;
+            gap: 1.25rem;
             grid-template-columns: minmax(6rem, auto) 1fr;
-            padding: .35rem 0;
-
+            padding: 0.35rem 0;
+        
             dt,
             dd {
                 margin: 0;
             }
-
+        
             dt {
+                align-self: start;
                 font-weight: 700;
                 font-size: 1.45rem;
+            }
+        
+            dd {
+                align-self: center;
+                padding-top: 0.25rem;
             }
         }
 
         .collectible-details__meta-row--price dd {
             color: $secondary-color;
+            padding-top: 0;
             font-size: 1.45rem;
             font-weight: 900;
         }
