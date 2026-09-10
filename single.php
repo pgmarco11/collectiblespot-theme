@@ -132,19 +132,30 @@ if ( have_posts() ) : ?>
                             >➤</span>
                             <?php
                         }
-                        ?>
-                        <span class="category">
-                            <a href="<?php echo esc_url(
-                                get_category_link(
-                                    $category->term_id
-                                )
-                            ); ?>">
-                                <?php echo esc_html(
-                                    $category->name
-                                ); ?>
+                    
+                        $category_url = get_category_link(
+                            $category->term_id
+                        );
+                    
+                        if ( 0 === $index ) {
+                            /*
+                             * The root category is a direct link so it receives
+                             * the orange comic-catalog breadcrumb style.
+                             */
+                            ?>
+                            <a href="<?php echo esc_url( $category_url ); ?>">
+                                <?php echo esc_html( $category->name ); ?>
                             </a>
-                        </span>
-                        <?php
+                            <?php
+                        } else {
+                            ?>
+                            <span class="category">
+                                <a href="<?php echo esc_url( $category_url ); ?>">
+                                    <?php echo esc_html( $category->name ); ?>
+                                </a>
+                            </span>
+                            <?php
+                        }
                     }
 
                     if ( $breadcrumb_categories ) {

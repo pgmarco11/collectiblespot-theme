@@ -21,7 +21,7 @@
                     font-weight: bold;
                     color: $text-color-white; 
                     text-align: left;                 
-                    margin-bottom: 2.5rem;
+                    margin-bottom: 1rem;
             
                     a {
                         color: $text-color-black;
@@ -34,11 +34,19 @@
                             color: $text-color-white;
                         }
                     }
+
+                    > .current-category:only-child {
+                        background-color: $tertiary-color;
+                        border-radius: 5px;
+                        color: $text-color-black;
+                        padding: .2rem .5rem;
+                    }
             
                     .separator {
                         margin: 0 0.4rem;
                         text-shadow: 1px 1px 0 $text-color-black;
                         color: $accent-color;
+                        background: none;
                         font-size: 1.2rem;
                     }
             

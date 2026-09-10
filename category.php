@@ -6,24 +6,35 @@
         <section id="body-content" class="body-section text-center">
             <header class="page-header">
                 <?php
-                    if (is_category()) {
-                        $category = get_queried_object();
-                        $breadcrumbs = [];
+                if (is_category()) {
+                    $category = get_queried_object();
+                    $breadcrumbs = [];
 
-                        while ($category->parent != 0) {
-                            $category = get_category($category->parent);
-                            array_unshift($breadcrumbs, $category);
-                        }
+                    while ($category->parent != 0) {
+                        $category = get_category($category->parent);
+                        array_unshift($breadcrumbs, $category);
+                    }
                         
-                        $current = get_queried_object();
+                    $current = get_queried_object();
 
-                        echo '<div class="category-breadcrumbs">';
-                        foreach ($breadcrumbs as $crumb) {
-                            echo '<a href="' . get_category_link($crumb->term_id) . '">' . $crumb->name . '</a> <span class="separator">&#10148;</span> ';
-                        }
-                        echo '<span class="current-category">' . $current->name . '</span>';
-                        echo '</div>';
-                    }           
+                    echo '<nav class="category-breadcrumbs" aria-label="' .
+                        esc_attr__( 'Breadcrumb', 'collectibles' ) .
+                            '">';
+                            foreach ( $breadcrumbs as $crumb ) {
+                                echo '<a href="' .
+                                    esc_url( get_category_link( $crumb->term_id ) ) .
+                                    '">' .
+                                    esc_html( $crumb->name ) .
+                                    '</a>';
+                            
+                                echo '<span class="separator" aria-hidden="true">➤</span>';
+                            }
+                            
+                            echo '<span class="current-category" aria-current="page">' .
+                                esc_html( $current->name ) .
+                                '</span>';
+                    echo '</nav>';
+                }           
 
                 $the_archive_title = get_the_archive_title();
                 $the_archive_title = str_replace('Category: ', '', $the_archive_title);

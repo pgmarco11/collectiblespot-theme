@@ -29,6 +29,7 @@
                             color: $text-color-white;
                         }
                     }
+
     
                     span + a {
                         background-color: transparent; 
@@ -39,12 +40,20 @@
                             color: $text-color-black;
                         }
                     }
+
+                    > .current-category:only-child {
+                        background-color: $tertiary-color;
+                        border-radius: 5px;
+                        color: $text-color-black;
+                        padding: .2rem .5rem;
+                    }
             
                     .separator {
                         margin: 0 0.4rem;
                         text-shadow: 1px 1px 0 $text-color-black;
                         color: $accent-color;
                         font-size: 1.2rem;
+                        background: none;
                     }
             
                     .current-category {

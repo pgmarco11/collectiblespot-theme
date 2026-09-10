@@ -44,12 +44,20 @@
                         color: $text-color-black;
                     }
             }
+
+            > .current-category:only-child {
+                background-color: $tertiary-color;
+                border-radius: 5px;
+                color: $text-color-black;
+                padding: .2rem .5rem;
+            }
             
             .separator {
                     color: $accent-color;
                     display: inline-block;
                     font-size: 1.2rem;
                     margin: 0 .4rem;
+                    background: none;
                     text-shadow: 1px 1px 0 $text-color-black;
             }
             
