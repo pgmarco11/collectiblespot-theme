@@ -20,7 +20,7 @@ $is_admin_preview = (
 );
 
 if (is_user_logged_in() && !$is_admin_preview) {
-    $collection_url = get_post_type_archive_link('collection');
+    $collection_url = home_url('/my-collection/');
 
     wp_safe_redirect(
         $collection_url ?: home_url('/')
