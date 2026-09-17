@@ -42,9 +42,11 @@ if ($is_ebay_item) {
     $url       = get_post_meta($post_id, 'ebay_url', true);
     $image_url = get_post_meta($post_id, 'ebay_image_url', true);
 
-    $high_res_image_url = function_exists('get_high_res_ebay_image')
+    $high_res_image_url = function_exists(
+        'get_high_res_ebay_image'
+    )
         ? get_high_res_ebay_image($image_url)
-        : '';
+        : $image_url;
 
     $button_label = (
         is_numeric($bids)

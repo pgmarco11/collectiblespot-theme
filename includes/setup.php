@@ -110,20 +110,6 @@ function exclude_pages_from_search($query) {
 }
 add_action('pre_get_posts', 'exclude_pages_from_search');
 
-add_action('init', function() {
-    global $wp;
-    $wp->add_query_var('publisher_id');
-    $wp->add_query_var('search');
-});
-
-// Register custom query vars
-add_filter('query_vars', function($vars) {
-    $vars[] = 'title_id';
-    $vars[] = 'issue_id';
-    $vars[] = 'letter';
-    return $vars;
-});
-
 
 //for single post category templates
 function post_is_in_descendant_category($cats, $_post = null) {
@@ -136,14 +122,3 @@ function post_is_in_descendant_category($cats, $_post = null) {
     }
     return false;
 }
-
-// Function to convert eBay image URL to high-resolution
-function get_high_res_ebay_image($image_url, $target_size = 's-l500') {
-    // Check if the URL matches the expected eBay image pattern
-    if (preg_match('/^(https:\/\/i\.ebayimg\.com\/images\/.*\/s-l)\d+(\.jpg)$/', $image_url)) {
-            // Replace the size suffix (e.g., s-l140) with the high-res suffix (e.g., s-l1600)
-            $high_res_url = preg_replace('/s-l\d+/', $target_size, $image_url);
-            return $high_res_url;
-    }
-    return $image_url; // Return original if pattern doesn't match
- }
