@@ -218,7 +218,7 @@ body {
           }
         }
         .navbar-toggler {
-          background-color: $primary-color-transparent;
+          background-color: $cream;
 
           &:focus {
             border: 1px solid $text-color-white;
@@ -259,7 +259,7 @@ body {
 
     .body-section,
     .page-section {
-      padding: 1rem 5% 0 2.5rem;
+      padding: 1rem 0.5rem 0 1rem;
       height: 100%;
       background-color: $text-color-white;
       background: url('../../images/asfalt-light.png'), $primary-color-transparent;

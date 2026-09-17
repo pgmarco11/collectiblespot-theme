@@ -10,7 +10,7 @@
                                 <a
                                     class="signin-link"
                                     href="<?php 
-                                    $inventory_url = tcs_inventory_url();
+                                        $inventory_url = tcs_inventory_url();
                                     echo esc_url(
                                         $inventory_url
                                     ); ?>"
@@ -80,7 +80,7 @@
                                 wp_nav_menu(array(
                                     'theme_location' => 'main',
                                     'menu_class' => 'navbar-nav mb-0',
-                                    'container' => false, // Avoid extra <nav> wrapping
+                                    'container' => false,
                                     'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>',
                                     'walker' => new Bootstrap_NavWalker(), 
                                 ));
