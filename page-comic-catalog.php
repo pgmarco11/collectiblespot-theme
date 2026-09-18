@@ -15,7 +15,15 @@ if ( ! class_exists( 'ComicRenderer' ) ) {
  * ----------------------------------------------------------------- */
 
 $per_page = 10;
-$page =   max(1, intval(get_query_var('page')) ?: 1);
+$page = max(
+    1,
+    absint(
+        get_query_var(
+            'catalog_page',
+            1
+        )
+    )
+);
 $letter = sanitize_text_field(get_query_var('letter', 'all'));
 $letter = urldecode($letter);
 $letter = $letter ?: 'all';

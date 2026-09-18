@@ -29,7 +29,16 @@ if ( ! file_exists( $issue_template ) ) {
  *  Input
  * ----------------------------------------------------------------- */
 $title_id = isset( $_GET['title_id'] ) ? max( 0, intval( $_GET['title_id'] ) ) : 0;
-$page     = isset( $_GET['page'] ) ? max( 1, intval( $_GET['page'] ) ) : 1;
+$page = absint(
+    get_query_var(
+        'catalog_page',
+        1
+    )
+);
+
+if ($page < 1) {
+    $page = 1;
+}
 $search   = isset( $_GET['search'] ) ? strtolower( trim( wp_strip_all_tags( $_GET['search'] ) ) ) : '';
 
 if ( ! $title_id ) {
