@@ -62,7 +62,7 @@
                     
                 ?>
                     <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-                        <div class="entry-wrapper" style="display: flex; gap: 20px; align-items: flex-start;">
+                        <div class="entry-wrapper" >
                             <?php if (has_post_thumbnail()) : ?>
                                 <div class="entry-thumbnail">
                                     <a href="<?php the_permalink(); ?>">
@@ -102,7 +102,7 @@
                                       ?> 
                                 </div>
 
-                                <div class="d-flex justify-content-start">
+                                <div class="entry-actions">
                                     <a href="<?= $url ?>" class="btn btn-primary comic-bubble" target="_blank"> 
                                         <?php 
                                  
