@@ -153,8 +153,17 @@
         </section>    
     </main>
 
-    <?php get_sidebar(); ?>
+    <?php
+    global $wp_query;
 
+    if (
+        $wp_query instanceof WP_Query &&
+        $wp_query->post_count > 0
+    ) {
+        get_sidebar();
+    }
+    ?>
+    
 </div>
 
 <?php get_footer(); ?>
