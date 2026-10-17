@@ -35,7 +35,7 @@ $email    = '';
 
 if (
     !$is_admin_preview &&
-    'POST' === $_SERVER['REQUEST_METHOD'] &&
+    'POST' === ($_SERVER['REQUEST_METHOD'] ?? '') &&
     isset($_POST['tcs_registration_action'])
 ) {
     /*
@@ -44,9 +44,7 @@ if (
     if (
         !isset($_POST['tcs_registration_nonce']) ||
         !wp_verify_nonce(
-            sanitize_text_field(
-                wp_unslash($_POST['tcs_registration_nonce'])
-            ),
+            tcs_registration_post_string('tcs_registration_nonce'),
             'tcs_register_user'
         )
     ) {
@@ -69,39 +67,15 @@ if (
     /*
      * Basic honeypot field for automated bots.
      */
-    $website = isset($_POST['website'])
-    ? trim((string) wp_unslash($_POST['website']))
-    : '';
-
-    if ('' !== $website) {
-        $registration_errors->add(
-            'spam_detected',
-            'Registration could not be completed.'
-        );
+    $website = trim(tcs_registration_post_string('website'));
+    if ($website !== '') {
+        $registration_errors->add('spam_detected', 'Registration could not be completed.');
     }
-
-    $username = isset($_POST['username'])
-        ? sanitize_user(
-            wp_unslash($_POST['username']),
-            true
-        )
-        : '';
-
-    $email = isset($_POST['email'])
-        ? sanitize_email(
-            wp_unslash($_POST['email'])
-        )
-        : '';
-
-    $password = isset($_POST['password'])
-        ? (string) wp_unslash($_POST['password'])
-        : '';
-
-    $password_confirm = isset($_POST['password_confirm'])
-        ? (string) wp_unslash($_POST['password_confirm'])
-        : '';
-
-    $accepted_terms = isset($_POST['accept_terms']);
+    $username = trim(tcs_registration_post_string('username'));
+    $email = sanitize_email(tcs_registration_post_string('email'));
+    $password = tcs_registration_post_string('password');
+    $password_confirm = tcs_registration_post_string('password_confirm');
+    $accepted_terms = tcs_registration_post_string('accept_terms') === '1';
 
     /*
      * Simple per-IP rate limit.
@@ -129,21 +103,15 @@ if (
     /*
      * Validate the submitted account information.
      */
-    if ('' === $username) {
+    if (!preg_match('/\A(?=(?:[^A-Za-z]*[A-Za-z]){3})(?=(?:[^0-9]*[0-9]){2})[A-Za-z0-9]{6,20}\z/', $username)) {
         $registration_errors->add(
-            'empty_username',
-            'Please enter a username.'
+            'invalid_username',
+            'Use 6–20 characters, including at least three letters and two numbers. Only letters and numbers are allowed.'
         );
-    } elseif (strlen($username) < 3) {
-        $registration_errors->add(
-            'short_username',
-            'Your username must contain at least three characters.'
-        );
+    } elseif (!validate_username($username)) {
+        $registration_errors->add('invalid_username', 'Please choose a valid username.');
     } elseif (username_exists($username)) {
-        $registration_errors->add(
-            'username_exists',
-            'That username is already registered.'
-        );
+        $registration_errors->add('username_exists', 'That username is already registered.');
     }
 
     if (!is_email($email)) {
@@ -158,11 +126,8 @@ if (
         );
     }
 
-    if (strlen($password) < 10) {
-        $registration_errors->add(
-            'weak_password',
-            'Your password must contain at least ten characters.'
-        );
+    foreach (tcs_registration_password_errors($password)->get_error_messages() as $message) {
+        $registration_errors->add('password_policy', $message);
     }
 
     if ($password !== $password_confirm) {
@@ -189,7 +154,8 @@ if (
             'user_login' => $username,
             'user_email' => $email,
             'user_pass'  => $password,
-            'role'       => get_option('default_role', 'subscriber'),
+            'role'       => 'subscriber',
+            'meta_input' => ['_tcs_email_pending' => '1'],
         ]);
 
         if (is_wp_error($user_id)) {
@@ -200,26 +166,12 @@ if (
                 );
             }
         } else {
-            /*
-             * Sign the new user in.
-             */
-            wp_set_current_user($user_id);
-            wp_set_auth_cookie($user_id, true);
-
-            /**
-             * Allow other plugins to react to registration.
-             */
-            do_action('tcs_user_registered', $user_id);
-
-            delete_transient($rate_limit_key);
-
-            $collection_url = get_post_type_archive_link('collection');
-
+            $sent = tcs_registration_send_verification($user_id);
             wp_safe_redirect(
                 add_query_arg(
-                    'registration',
-                    'success',
-                    $collection_url ?: home_url('/')
+                    'verification',
+                    $sent ? 'sent' : 'mailfailed',
+                    home_url('/register/')
                 )
             );
             exit;
@@ -246,6 +198,8 @@ get_header();
                         and wishlist.
                     </p>
                 </header>
+
+                <?php tcs_registration_verification_notice(); ?>
 
                 <?php if ($is_admin_preview) : ?>
                     <div
@@ -286,7 +240,7 @@ get_header();
                     >
                         New account registration is currently unavailable.
                     </div>
-                <?php else : ?>
+                <?php elseif (!in_array(tcs_registration_verification_status(), ['sent', 'mailfailed', 'verified'], true)) : ?>
                     <form
                         class="registration-form"
                         method="post"
@@ -337,14 +291,16 @@ get_header();
                                 name="username"
                                 type="text"
                                 value="<?php echo esc_attr($username); ?>"
-                                minlength="3"
-                                maxlength="60"
+                                minlength="6"
+                                pattern="(?=(?:[^A-Za-z]*[A-Za-z]){3})(?=(?:[^0-9]*[0-9]){2})[A-Za-z0-9]{6,20}"
+                                title="Use 6–20 characters, with at least three letters and two numbers."
+                                maxlength="20"
                                 autocomplete="username"
                                 required
                             >
 
                             <small>
-                                Use at least three letters or numbers.
+                                Use 6–20 characters, including at least three letters and two numbers. Only letters and numbers are allowed.
                             </small>
                         </div>
 
@@ -373,13 +329,13 @@ get_header();
                                 id="registration-password"
                                 name="password"
                                 type="password"
-                                minlength="10"
+                                minlength="12"
                                 autocomplete="new-password"
                                 required
                             >
 
                             <small>
-                                Use at least ten characters.
+                                Use at least twelve characters, including one special character such as !, @, or #. Spaces do not count as special characters.
                             </small>
                         </div>
 
@@ -392,7 +348,7 @@ get_header();
                                 id="registration-password-confirm"
                                 name="password_confirm"
                                 type="password"
-                                minlength="10"
+                                minlength="12"
                                 autocomplete="new-password"
                                 required
                             >
@@ -436,6 +392,7 @@ get_header();
 
                             Create Account
                         </button>
+                        </fieldset>
                     </form>
                 <?php endif; ?>
 
@@ -443,10 +400,12 @@ get_header();
                     <p>
                         Already have an account?
 
-                        <a href="<?php echo esc_url(wp_login_url()); ?>">
+                        <a href="<?php echo esc_url(wp_login_url(home_url('/my-collection/'))); ?>">
                             Sign in
                         </a>
                     </p>
+                    <p><a href="<?php echo esc_url(wp_lostpassword_url()); ?>">Forgot your password?</a></p>
+                    <?php tcs_registration_resend_form(); ?>
                 </footer>
             </div>
         </section>

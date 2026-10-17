@@ -1,0 +1,186 @@
+// Shared alignment for header account controls.
+body {
+    .header-container {
+        .header-top {
+            .container {
+                .header-tools {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                    flex-wrap: wrap;
+                    gap: 0.25rem 1.25rem;
+
+                    .signin-link {
+                        appearance: none;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 0.5rem;
+                        min-height: 44px;
+                        margin: 0;
+                        padding: 0.25rem 0;
+                        border: 0;
+                        border-radius: 0;
+                        background: transparent;
+                        color: #fff;
+                        font: inherit;
+                        font-weight: 600;
+                        line-height: 1.2;
+                        text-decoration: none;
+                        white-space: nowrap;
+                        cursor: pointer;
+
+                        &:hover,
+                        &:focus-visible {
+                            color: #ffad24;
+                        }
+
+                        &:focus-visible {
+                            outline: 2px solid #ffad24;
+                            outline-offset: 4px;
+                        }
+                    }
+
+                    .signin-icon {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex: 0 0 24px;
+                        width: 24px;
+                        height: 24px;
+
+                        i {
+                            font-size: 24px;
+                            line-height: 1;
+                        }
+                    }
+
+                    .signin-text {
+                        display: inline-block;
+                        margin: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Sign-in modal.
+#tcs-signin-modal {
+    .modal-content {
+        overflow: hidden;
+        border: 2px solid #ffad24;
+        border-radius: 0.75rem;
+        background: #fff;
+        color: #17212f;
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        border-bottom: 3px solid #ffad24;
+        background: var(--wp--preset--color--primary, #005bbb);
+        color: #fff;
+        padding: 1rem 1.25rem;
+    }
+
+    .modal-title {
+        margin: 0;
+        color: inherit;
+        font-size: 1.8rem;
+        line-height: 1.2;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .tcs-signin-intro {
+        margin: 0 0 1.25rem;
+    }
+
+    a:focus-visible {
+        outline: 3px solid #005bbb;
+        outline-offset: 3px;
+    }
+
+    .tcs-signin-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1rem;
+        padding-top: 0.25rem;
+        font-size: 0.9rem;
+
+        a {
+            color: #0052a3;
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
+        }
+    }
+}
+
+// WordPress login form.
+#tcs-signin-form {
+    p {
+        margin: 0 0 1rem;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+    }
+
+    input {
+        &[type="text"],
+        &[type="password"] {
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 46px;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid #798797;
+            border-radius: 0.35rem;
+            background: #fff;
+            color: #17212f;
+            font: inherit;
+        }
+
+        &:focus-visible {
+            outline: 3px solid #005bbb;
+            outline-offset: 3px;
+        }
+
+        &[type="checkbox"] {
+            margin: 0;
+            width: 1.1rem;
+            height: 1.1rem;
+            flex: 0 0 auto;
+        }
+
+        &[type="submit"] {
+            appearance: none;
+            width: 100%;
+            min-height: 46px;
+            padding: 0.7rem 1rem;
+            border: 2px solid #ffad24;
+            border-radius: 0.35rem;
+            background: #ffad24;
+            color: #17212f;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+
+            &:hover {
+                background: #ffc45f;
+            }
+        }
+    }
+
+    .login-remember {
+        label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 400;
+        }
+    }
+}

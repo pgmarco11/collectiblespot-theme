@@ -63,46 +63,14 @@ body {
     }
     
     .header-top {
-      background: url('../../images/asfalt-light.png'), $secondary-color-transparent;
+      background: url('../../images/asfalt-light.png'),
+          $secondary-color-transparent;
       background-blend-mode: overlay;
       padding: 3px 0;
-
-        .container {
+  
+      .container {
           max-width: 97.5%;
-
-            .header-tools {
-              display: flex;
-              justify-content: flex-end;
-              align-items: center;
-              gap: 1.25rem;
-          
-              .signin-link {
-                  color: $text-color-white;
-                  display: flex;
-                  align-items: center;
-                  text-decoration: none;
-          
-                  &:hover,
-                  &:focus-visible {
-                      color: $tertiary-color;
-                  }
-          
-                  &:focus-visible {
-                      outline: 2px solid $tertiary-color;
-                      outline-offset: 4px;
-                  }
-          
-                  .signin-icon i {
-                      font-size: 24px;
-                  }
-          
-                  .signin-text {
-                      margin-left: 10px;
-                      align-content: center;
-                  }
-              }
-            }
-        }
+      }
     }
     .header-main {
       display: flex;
@@ -252,6 +220,8 @@ body {
     background-position: 50% center;
     background-size: contain;
     background-repeat: repeat;
+    flex: 1 1 auto; // Allow main content to take remaining space
+    min-width: 0; // Prevent overflow issues
 
     .hero-section {
       background: url('../../images/asfalt-light.png'), $primary-color-transparent;
@@ -264,7 +234,6 @@ body {
     .page-section {
       padding: 1rem 1.25rem 0 1rem;
       height: 100%;
-      background-color: $text-color-white;
       background: url('../../images/asfalt-light.png'), $primary-color-transparent;
       background-blend-mode: overlay;
 
@@ -336,10 +305,6 @@ body {
     @media (max-width: $mobile-res-md) {
       flex-direction: column; // Stack vertically on mobile
     }
-  }
-  .site-main {
-    flex: 1 1 auto; // Allow main content to take remaining space
-    min-width: 0; // Prevent overflow issues
   }
   .sidebar {
     padding: 1rem;
@@ -526,4 +491,5 @@ body {
 @import 'shortcodes';
 @import 'toastify';
 @import 'registration';
+@import 'account';
 

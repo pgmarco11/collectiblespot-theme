@@ -48,8 +48,11 @@
     display: inline-block;
     color: $tertiary-color;
     font-weight: 900;
-    letter-spacing: 0.08em;
+    letter-spacing: .08em;
     text-transform: uppercase;
+    text-shadow: 3px 2px black;
+    font-size: 1.5rem;
+    font-style: italic;
 }
 
 .registration-form {

@@ -7,47 +7,27 @@
                         <!-- Search Form -->
                         <div class="header-tools">
                             <?php if (is_user_logged_in()) : ?>
-                                <a
-                                    class="signin-link"
-                                    href="<?php 
-                                        $inventory_url = tcs_inventory_url();
-                                    echo esc_url(
-                                        $inventory_url
-                                    ); ?>"
-                                >
-                                    <div class="signin-icon">
-                                        <i class="bi bi-person-circle"></i>
-                                    </div>
-
-                                    <div class="signin-text">
-                                        My Collection
-                                    </div>
+                                <a class="signin-link" href="<?php
+                                    $inventory_url = function_exists('tcs_inventory_url')
+                                        ? tcs_inventory_url()
+                                        : home_url('/my-collection/');
+                                    echo esc_url($inventory_url);
+                                ?>">
+                                    <span class="signin-icon" aria-hidden="true"><i class="bi bi-person-circle"></i></span>
+                                    <span class="signin-text">My Collection</span>
+                                </a>
+                                <a class="signin-link" href="<?php echo esc_url(wp_logout_url(home_url('/'))); ?>">
+                                    <span class="signin-icon" aria-hidden="true"><i class="bi bi-box-arrow-right"></i></span>
+                                    <span class="signin-text">Sign out</span>
                                 </a>
                             <?php else : ?>
-                                <a
-                                    class="signin-link open-modal"
-                                    href="#signin-modal"
-                                >
-                                    <div class="signin-icon">
-                                        <i class="bi bi-box-arrow-in-right"></i>
-                                    </div>
-
-                                    <div class="signin-text">
-                                        Sign In
-                                    </div>
-                                </a>
-
-                                <a
-                                    class="signin-link"
-                                    href="<?php echo esc_url(home_url('/register/')); ?>"
-                                >
-                                    <div class="signin-icon">
-                                        <i class="bi bi-person-plus"></i>
-                                    </div>
-
-                                    <div class="signin-text">
-                                        Register
-                                    </div>
+                                <button class="signin-link" type="button" data-bs-toggle="modal" data-bs-target="#tcs-signin-modal" aria-haspopup="dialog" aria-controls="tcs-signin-modal">
+                                    <span class="signin-icon" aria-hidden="true"><i class="bi bi-box-arrow-in-right"></i></span>
+                                    <span class="signin-text">Sign In</span>
+                                </button>
+                                <a class="signin-link" href="<?php echo esc_url(home_url('/register/')); ?>">
+                                    <span class="signin-icon" aria-hidden="true"><i class="bi bi-person-plus"></i></span>
+                                    <span class="signin-text">Register</span>
                                 </a>
                             <?php endif; ?>
                         </div>
