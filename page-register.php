@@ -72,7 +72,7 @@ if (
         $registration_errors->add('spam_detected', 'Registration could not be completed.');
     }
     $username = trim(tcs_registration_post_string('username'));
-    $email = sanitize_email(tcs_registration_post_string('email'));
+    $email = trim(tcs_registration_post_string('email'));
     $password = tcs_registration_post_string('password');
     $password_confirm = tcs_registration_post_string('password_confirm');
     $accepted_terms = tcs_registration_post_string('accept_terms') === '1';
