@@ -107,50 +107,17 @@ body {
           max-width: 100%;
        }
 
-        @media(max-width: $mobile-res-lg) {   
-          
+        @media(max-width: 991.98px) {             
           .header-nav {
             width: 100%;
             background-color: $primary-color;
-
-            .navbar-nav {
-              width: 100%;
-        
-              > li {
-                display: block;
-                width: 100%;
-                margin: 0;
-              }
-        
-              .dropdown-menu {
-                position: static;
-                float: none;
-                min-width: 0;
-                width: 100%;
-        
-                &.show {
-                  display: block;
-                }
-              }
-            }
       
             .navbar-toggler {
               margin: .1rem .5rem;
               align-self: flex-end;
             }
             .navbar-collapse {
-              width: 100%;
-
-              li {
-                margin: 0 auto !important;       
-                a {
-                  text-align: center;   
-                
-                  &:hover {
-                    background-color: $primary-color-transparent;
-                  }
-                }
-              }       
+              width: 100%;    
             }
           }
         }
@@ -171,62 +138,224 @@ body {
         .header-nav {
           display: flex;
           justify-content: center;
-    
+        
           .navbar-nav {
             list-style: none;
             padding: 0;
             margin: 0;
-    
+        
             li {
               display: inline-block;
               text-align: center;
               min-width: 120px;
-              margin: 0 10px;        
-    
-              a {
+              margin: 0 10px;
+        
+              > a {
                 text-decoration: none;
                 color: $text-color-white;
-              }            
-    
+        
+                &:focus-visible {
+                  outline: 2px solid $tertiary-color;
+                  outline-offset: -3px;
+                }
+              }
+        
               &:last-child {
                 margin-right: 0;
               }
-
+        
+              // Desktop: active text only.
               &.current-menu-item,
               &.current-menu-parent,
               &.current-menu-ancestor {
                 > a {
-                  background-color: $tertiary-color;
-                  color: $text-color-black;
+                  background-color: transparent;
+                  color: $tertiary-color;
         
                   &:hover,
                   &:focus-visible {
-                    background-color: $tertiary-color;
-                    color: $text-color-black;
+                    background-color: transparent;
+                    color: $tertiary-color;
                   }
                 }
               }
         
-              > a:focus-visible {
-                outline: 2px solid $tertiary-color;
-                outline-offset: 2px;
-              }
-
-              ul.dropdown-menu.show { 
+              > ul.dropdown-menu {
                 background-color: $primary-color;
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                border-top: 3px solid $tertiary-color;
                 border-radius: 0;
-                padding: 1rem 0;
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+                padding: 0.4rem 0;
                 margin: 0;
-                min-width: 200px;
-                width: 100%;
-                
-                li {
-                  margin: 0 auto;
+                min-width: 220px;
+                width: max-content;
+                max-width: calc(100vw - 2rem);
+              
+                > li {
+                  display: block;
                   width: 100%;
-                  text-align: center;
-                } 
+                  min-width: 0;
+                  margin: 0;
+                  text-align: left;
+              
+                  > a {
+                    display: block;
+                    padding: 0.65rem 1.1rem;
+                    text-align: left;
+                    line-height: 1.4;
+                    white-space: normal;
+              
+                    &:hover,
+                    &:focus-visible {
+                      background-color: rgba(0, 0, 0, 0.18);
+                      color: $text-color-white;
+                    }
+                  }
+              
+                  &.current-menu-item,
+                  &.current-menu-parent,
+                  &.current-menu-ancestor {
+                    > a {
+                      color: $tertiary-color;
+                      font-weight: 700;
+              
+                      &:hover,
+                      &:focus-visible {
+                        background-color: rgba(0, 0, 0, 0.18);
+                        color: $tertiary-color;
+                      }
+                    }
+                  }
+                }
               }
-            }        
+            }
+          }
+        
+          // Mobile layout and active states.
+          @media (max-width: 991.98px) {
+            .navbar-nav {
+              width: 100%;
+              padding: 0.5rem 0;
+        
+              li {
+                display: block;
+                width: 100%;
+                min-width: 0;
+                margin: 0;
+        
+                > a {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.75rem;
+                  min-height: 48px;
+                  padding: 0.75rem 1.25rem;
+                  text-align: left;
+                  line-height: 1.4;
+        
+                  &:hover,
+                  &:focus-visible {
+                    background-color: rgba(0, 0, 0, 0.15);
+                  }
+                }
+        
+                // Parent section: yellow text.
+                &.current-menu-parent,
+                &.current-menu-ancestor {
+                  > a {
+                    font-weight: 700;
+        
+                    &:hover,
+                    &:focus-visible {
+                      background-color: rgba(0, 0, 0, 0.15);
+                    }
+                  }
+                }
+        
+                // Current page: yellow background.
+                &.current-menu-item {
+                  > a {
+                    background-color: $tertiary-color;
+                    color: $text-color-black;
+                    font-weight: 700;
+        
+                    &:hover,
+                    &:focus-visible {
+                      background-color: $tertiary-color;
+                      color: $text-color-black;
+                    }
+                  }
+                }
+        
+                > .dropdown-toggle {
+                  &::after {
+                    margin-left: auto;
+                    flex-shrink: 0;
+                  }
+        
+                  &[aria-expanded="true"]::after {
+                    transform: rotate(180deg);
+                  }
+                }
+        
+                > ul.dropdown-menu {
+                  position: static;
+                  float: none;
+                  width: 100%;
+                  max-width: none;
+                  min-width: 0;
+                  margin: 0;
+                  padding: 0.25rem 0;
+                  border: 0;
+                  border-radius: 0;
+                  box-shadow: none;
+                  background-color: rgba(0, 0, 0, 0.18);
+                
+                  &.show {
+                    display: block;
+                  }
+                
+                  > li {
+                    width: 100%;
+                    margin: 0;
+                    text-align: left;
+                
+                    > a {
+                      display: flex;
+                      width: 100%;
+                      min-height: 48px;
+                      padding: 0.75rem 1.25rem 0.75rem 2.5rem;
+                      text-align: left;
+                      color: $text-color-white;
+                
+                      &:hover,
+                      &:focus-visible {
+                        background-color: rgba(0, 0, 0, 0.15);
+                        color: $text-color-white;
+                      }
+                    }
+                
+                    &.current-menu-item {
+                      > a {
+                        background-color: $tertiary-color;
+                        color: $text-color-black;
+                        font-weight: 700;
+                
+                        &:hover,
+                        &:focus-visible {
+                          background-color: $tertiary-color;
+                          color: $text-color-black;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+        
+              > li + li {
+                border-top: 1px solid rgba(255, 255, 255, 0.12);
+              }
+            }
           }
         }
         .navbar-toggler {
