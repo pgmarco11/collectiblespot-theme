@@ -53,6 +53,13 @@
 
                  if($buy_now_price || $ebay_price) {
                     $url = get_post_meta(get_the_ID(), 'ebay_url', true);
+                    $ebay_listing_id = trim(
+                        (string) get_post_meta(get_the_ID(), 'ebay_item_id', true)
+                    );
+                    
+                    if (preg_match('/\A[0-9]{9,20}\z/', $ebay_listing_id)) {
+                        $url = 'https://www.ebay.com/itm/' . $ebay_listing_id;
+                    }
                     $image_url = get_post_meta(get_the_ID(), 'ebay_image_url', true);
                 } else {
                     $discogs_price = get_post_meta(get_the_ID(), 'discogs_price', true);    
@@ -102,8 +109,13 @@
                                       ?> 
                                 </div>
 
-                                <div class="entry-actions">
-                                    <a href="<?= $url ?>" class="btn btn-primary comic-bubble" target="_blank"> 
+                                <div class="entry-actions">                     
+                                        <a
+                                            href="<?php echo esc_url($url); ?>"
+                                            class="btn btn-primary comic-bubble"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
                                         <?php 
                                  
                                         echo ($buy_now_price || $ebay_price) ? ($buy_now_price ? 'Bid Now' : 'Buy on Ebay') : "Buy on Discogs";                                         

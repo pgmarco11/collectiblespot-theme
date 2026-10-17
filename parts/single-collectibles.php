@@ -40,6 +40,11 @@ $high_res_image_url = '';
 if ($is_ebay_item) { 
     $price     = $ebay_price;
     $url       = get_post_meta($post_id, 'ebay_url', true);
+    $ebay_listing_id = trim((string) $ebay_item_id);
+
+    if (preg_match('/\A[0-9]{9,20}\z/', $ebay_listing_id)) {
+        $url = 'https://www.ebay.com/itm/' . $ebay_listing_id;
+    }
     $image_url = get_post_meta($post_id, 'ebay_image_url', true);
 
     $high_res_image_url = function_exists(
