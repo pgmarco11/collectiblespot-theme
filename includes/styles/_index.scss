@@ -82,6 +82,7 @@ body {
       @media(max-width: $mobile-res-lg) {
         padding: 0;
       }
+      
       .container,
       .container-fluid {
         display: flex;
@@ -100,13 +101,38 @@ body {
             }  
           }
         }
-        @media(max-width: $mobile-res-lg) {  
+
+        @media(max-width: $desktops-res) {  
           padding: 0;
           max-width: 100%;
+       }
 
+        @media(max-width: $mobile-res-lg) {   
+          
           .header-nav {
             width: 100%;
             background-color: $primary-color;
+
+            .navbar-nav {
+              width: 100%;
+        
+              > li {
+                display: block;
+                width: 100%;
+                margin: 0;
+              }
+        
+              .dropdown-menu {
+                position: static;
+                float: none;
+                min-width: 0;
+                width: 100%;
+        
+                &.show {
+                  display: block;
+                }
+              }
+            }
       
             .navbar-toggler {
               margin: .1rem .5rem;
@@ -114,11 +140,6 @@ body {
             }
             .navbar-collapse {
               width: 100%;
-
-              .dropdown-menu,
-              .dropdown-toggle::after {
-                display: none;
-              }
 
               li {
                 margin: 0 auto !important;       
@@ -159,7 +180,7 @@ body {
             li {
               display: inline-block;
               text-align: center;
-              min-width: 144px;
+              min-width: 120px;
               margin: 0 10px;        
     
               a {
@@ -171,11 +192,31 @@ body {
                 margin-right: 0;
               }
 
+              &.current-menu-item,
+              &.current-menu-parent,
+              &.current-menu-ancestor {
+                > a {
+                  background-color: $tertiary-color;
+                  color: $text-color-black;
+        
+                  &:hover,
+                  &:focus-visible {
+                    background-color: $tertiary-color;
+                    color: $text-color-black;
+                  }
+                }
+              }
+        
+              > a:focus-visible {
+                outline: 2px solid $tertiary-color;
+                outline-offset: 2px;
+              }
+
               ul.dropdown-menu.show { 
-                border: .08rem solid $text-color-black;
                 background-color: $primary-color;
-                box-shadow: 0 0 0 .04rem $text-color-white;
                 border-radius: 0;
+                padding: 1rem 0;
+                margin: 0;
                 min-width: 200px;
                 width: 100%;
                 
@@ -481,6 +522,8 @@ body {
     }
   }
 }
+
+
 @import 'home';
 @import 'category';
 @import 'search';

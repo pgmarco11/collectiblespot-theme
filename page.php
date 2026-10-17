@@ -3,7 +3,7 @@
 <div class="d-flex flex-column flex-md-row w-100">
 
     <main class="site-main flex-fill">
-        <section id="body-content" class="page-section text-center">
+        <section id="body-content" class="page-section">
             <header class="page-header">                
                 <h1 class="page-title"><span><?php the_title(); ?></span></h1>              
             </header>
