@@ -33,7 +33,7 @@ get_header();
                     <input type="hidden" name="redirect_to" value="<?php echo esc_attr($state['redirect']); ?>">
                     <div class="registration-fieldset">
                         <div class="registration-field">
-                            <label for="tcs-page-login-username">Username or email address</label>
+                            <label for="tcs-page-login-username">Username or registered email address</label>
                             <input id="tcs-page-login-username" name="log" type="text" value="<?php echo esc_attr($state['username']); ?>" autocomplete="username" autocapitalize="none" spellcheck="false" required>
                         </div>
                         <div class="registration-field">

@@ -8,17 +8,55 @@ function tcs_login_request_string($source, $key) {
 
 function tcs_login_safe_destination($requested) {
     $fallback = home_url('/my-collection/');
-    $destination = wp_validate_redirect($requested, $fallback);
-    $host = wp_parse_url($destination, PHP_URL_HOST);
-    if ($host && strcasecmp($host, (string) wp_parse_url(home_url('/'), PHP_URL_HOST)) !== 0) {
+
+    $requested = is_string($requested)
+        ? trim($requested)
+        : '';
+
+    if ($requested === '') {
         return $fallback;
     }
-    $path = untrailingslashit((string) wp_parse_url($destination, PHP_URL_PATH));
+
+    $destination = wp_validate_redirect($requested, $fallback);
+
+    if ($destination === '') {
+        return $fallback;
+    }
+
+    $host = wp_parse_url($destination, PHP_URL_HOST);
+
+    if (
+        $host &&
+        strcasecmp(
+            $host,
+            (string) wp_parse_url(home_url('/'), PHP_URL_HOST)
+        ) !== 0
+    ) {
+        return $fallback;
+    }
+
+    $path = untrailingslashit(
+        (string) wp_parse_url($destination, PHP_URL_PATH)
+    );
+
     $login_paths = [
-        untrailingslashit((string) wp_parse_url(home_url('/login/'), PHP_URL_PATH)),
-        untrailingslashit((string) wp_parse_url(site_url('wp-login.php'), PHP_URL_PATH)),
+        untrailingslashit(
+            (string) wp_parse_url(
+                home_url('/login/'),
+                PHP_URL_PATH
+            )
+        ),
+        untrailingslashit(
+            (string) wp_parse_url(
+                site_url('wp-login.php'),
+                PHP_URL_PATH
+            )
+        ),
     ];
-    return in_array($path, $login_paths, true) ? $fallback : $destination;
+
+    return in_array($path, $login_paths, true)
+        ? $fallback
+        : $destination;
 }
 
 // Keep security reauthentication and special core login flows on WordPress's screen.
@@ -71,7 +109,7 @@ add_action('template_redirect', static function () {
         if (!wp_verify_nonce($nonce, 'tcs_login_page')) {
             $state['errors']->add('session_expired', 'Your session expired. Reload this page and try again.');
         } elseif ($state['username'] === '' || $password === '') {
-            $state['errors']->add('missing_fields', 'Enter your username or email address and password.');
+            $state['errors']->add('missing_fields', 'Enter your username or registered email address and password.');
         } else {
             // Basic local form throttle; existing WordPress authentication hooks still run.
             $address = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');

@@ -21,7 +21,7 @@ if (is_user_logged_in()) {
                     'id_password' => 'tcs-signin-password',
                     'id_remember' => 'tcs-signin-remember',
                     'id_submit' => 'tcs-signin-submit',
-                    'label_username' => 'Username or email address',
+                    'label_username' => 'Username or registered email address',
                     'label_password' => 'Password',
                     'label_remember' => 'Remember me',
                     'label_log_in' => 'Sign In',
