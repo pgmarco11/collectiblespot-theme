@@ -1,0 +1,55 @@
+.tcs-login-page {
+    .tcs-login-remember {
+        align-items: center;
+
+        input {
+            margin-top: 0;
+            flex: 0 0 auto;
+        }
+    }
+
+    .tcs-login-footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.75rem;
+
+        > p {
+            margin: 0;
+        }
+
+        .tcs-login-verification {
+            width: 100%;
+            margin-top: 0.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.15);
+
+            p {
+                margin: 0 0 0.75rem;
+            }
+
+            .btn-secondary {
+                display: inline-flex;
+                align-items: center;
+                min-height: 44px;
+                padding: 0.65rem 1rem;
+                color: $text-color-white;
+                background: $secondary-color;
+                border-color: $secondary-color;
+                font-weight: 600;
+                text-decoration: none;
+
+                &:hover {
+                    background: $navy-blue;
+                    border-color: $navy-blue;
+                }
+
+                &:focus-visible {
+                    outline: 3px solid $tertiary-color;
+                    outline-offset: 3px;
+                }
+            }
+        }
+    }
+}

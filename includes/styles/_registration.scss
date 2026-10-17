@@ -155,18 +155,151 @@
 }
 
 .registration-footer {
-    padding: 1.25rem;
+    display: grid;
+    gap: 1rem;
+    padding: 1.75rem;
     text-align: center;
     background: $cream;
     border-top: 2px dashed $secondary-color;
 
-    p {
+    > p {
         margin: 0;
     }
 
-    a {
+    > p a {
         color: $primary-color;
-        font-weight: 900;
+        font-weight: 700;
+        text-underline-offset: 0.15em;
+    }
+
+    .registration-resend {
+        margin-top: 0.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.15);
+
+        // Secondary-button appearance; preserves expand/collapse.
+        > summary {
+            display: inline-flex;
+            gap: 0.65rem;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0.7rem 1.25rem;
+            border: 1px solid $secondary-color;
+            border-radius: 0.4rem;
+            background: $secondary-color;
+            color: $text-color-white;
+            font: inherit;
+            font-weight: 600;
+            line-height: 1.4;
+            list-style: none;
+            cursor: pointer;
+
+            &::after {
+                content: "";
+                width: 0.45rem;
+                height: 0.45rem;
+                border-right: 2px solid currentColor;
+                border-bottom: 2px solid currentColor;
+                transform: rotate(45deg);
+                transition: transform 0.2s ease;
+            }
+
+
+
+            &::marker {
+                content: "";
+            }
+
+            &::-webkit-details-marker {
+                display: none;
+            }
+
+            &:hover {
+                background: $navy-blue;
+                border-color: $navy-blue;
+            }
+
+            &:focus-visible {
+                outline: 3px solid $tertiary-color;
+                outline-offset: 3px;
+            }
+        }
+
+        &[open] > summary {
+            margin-bottom: 1.25rem;
+
+            &::after {
+                transform: rotate(225deg);
+            }
+        }
+
+        form {
+            display: grid;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: left;
+
+            p {
+                display: grid;
+                gap: 0.5rem;
+                margin: 0;
+            }
+
+            label {
+                font-weight: 700;
+            }
+
+            input[type="email"] {
+                box-sizing: border-box;
+                width: 100%;
+                min-height: 46px;
+                padding: 0.7rem 0.85rem;
+                border: 2px solid $navy-blue;
+                border-radius: 0.4rem;
+                background: $text-color-white;
+                color: $text-color-black;
+                font: inherit;
+
+                &:focus-visible {
+                    outline: 3px solid $tertiary-color;
+                    outline-offset: 2px;
+                }
+            }
+
+            button[type="submit"] {
+                min-height: 44px;
+                padding: 0.7rem 1rem;
+                border: 1px solid $secondary-color;
+                border-radius: 0.4rem;
+                background: $secondary-color;
+                color: $text-color-white;
+                font: inherit;
+                font-weight: 600;
+                cursor: pointer;
+
+                &:hover {
+                    background: $navy-blue;
+                    border-color: $navy-blue;
+                }
+
+                &:focus-visible {
+                    outline: 3px solid $tertiary-color;
+                    outline-offset: 3px;
+                }
+            }
+        }
+    }
+
+    @media (min-width: 576px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: center;
+        gap: 1.25rem;
+
+        .registration-resend {
+            grid-column: 1 / -1;
+        }
     }
 }
 

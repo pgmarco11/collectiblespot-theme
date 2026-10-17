@@ -2,6 +2,8 @@
 //variable declarations
 
 //include statements
+require_once get_theme_file_path('/includes/front/login.php');
+
 include(get_theme_file_path('/includes/front/enqueue.php'));
 
 include(get_theme_file_path('/includes/front/classes.php'));
