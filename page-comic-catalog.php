@@ -263,10 +263,22 @@ get_header();
                     $letter_url_args['publisher_id'] = $selected_publisher;
                 }
             ?>
+
+            <?php
+            $series_letters = $is_series_view
+                ? $comic_renderer->get_series_letters($selected_publisher)
+                : ['complete' => false, 'letters' => []];
+            ?>
                   
             <!-- LETTER FILTER -->
-            <div id="letter-buttons" class="filters letter-filter" style="display: flex;">
-                    <a
+            <div 
+                id="letter-buttons" 
+                class="filters letter-filter" 
+                style="display: flex;"
+                data-publisher-id="<?php echo esc_attr($selected_publisher); ?>"
+                data-series-letters="<?php echo esc_attr(wp_json_encode($series_letters)); ?>"  
+            >
+                    <a                        
                         href="<?php
                             echo esc_url(
                                 add_query_arg(
@@ -279,7 +291,8 @@ get_header();
                             );
                         ?>"
                         class="letter-btn <?php echo $letter === 'all' ? 'active' : ''; ?>"
-                        data-letter="all">
+                        data-letter="all"   
+                    >
                         All
                     </a>
                     <?php foreach (range('A', 'Z') as $l) : ?>
@@ -296,7 +309,17 @@ get_header();
                                 );
                             ?>"
                             class="letter-btn <?php echo $letter === $l ? 'active' : ''; ?>"
-                            data-letter="<?php echo esc_attr($l); ?>">
+                            data-letter="<?php echo esc_attr($l); ?>"
+                            <?php if (
+                                    $is_series_view &&
+                                    (
+                                        !$series_letters['complete'] ||
+                                        !in_array($l, $series_letters['letters'], true)
+                                    )
+                                ) : ?>
+                                    style="display: none;"
+                            <?php endif; ?>
+                            >
                             <?php echo esc_html($l); ?>
                         </a>
                     <?php endforeach; ?>
@@ -313,7 +336,17 @@ get_header();
                             );
                         ?>"
                         class="letter-btn <?php echo $letter === '#' ? 'active' : ''; ?>"
-                        data-letter="#">
+                        data-letter="#"
+                        <?php if (
+                                $is_series_view &&
+                                (
+                                    !$series_letters['complete'] ||
+                                    !in_array('#', $series_letters['letters'], true)
+                                )
+                            ) : ?>
+                                style="display: none;"
+                        <?php endif; ?>
+                        >
                         #
                     </a>
                 </div>
