@@ -1,4 +1,5 @@
 // Category Sections
+
 .page {
     .site-main {
         .page-section {
@@ -69,6 +70,14 @@
 
             }  
         }
+    }
+}
+
+.template-default-wish-list {
+    .page-title {
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        margin-bottom: 1.5rem;
     }
 }
 

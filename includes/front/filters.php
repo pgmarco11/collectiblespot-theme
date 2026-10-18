@@ -1,5 +1,24 @@
 <?php
 
+add_filter('body_class', function ($classes) {
+    if (is_page()) {
+        $template = get_page_template_slug();
+        $template_name = $template
+            ? pathinfo($template, PATHINFO_FILENAME)
+            : 'default';
+
+        $slug = get_post_field('post_name', get_queried_object_id());
+
+        if ($slug) {
+            $classes[] = sanitize_html_class(
+                'template-' . $template_name . '-' . $slug
+            );
+        }
+    }
+
+    return $classes;
+});
+
 /**
  * Include category names in the main front-end search.
  */
@@ -62,7 +81,6 @@ function tcs_search_include_categories($search, $query) {
     return $search;
 }
 add_filter('posts_search', 'tcs_search_include_categories', 10, 2);
-
 
 function defer_scripts($tag, $handle, $src) {
     $defer_scripts = ['wp-emoji-release', 'jquery-migrate'];
