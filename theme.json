@@ -18,7 +18,7 @@
         { "slug": "background-light", "color": "#fef8f0", "name": "Light Cream Background" },
         { "slug": "background-dark", "color": "#1a1a1a", "name": "Dark Background" },
         { "slug": "primary", "color": "#005bbb", "name": "Primary Royal Blue" },
-        { "slug": "secondary", "color": "#1e7dbc;", "name": "Secondary Medium Blue" }
+        { "slug": "secondary", "color": "#1e7dbc", "name": "Secondary Medium Blue" }
       ],
       "gradients": [
         {
