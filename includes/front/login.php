@@ -111,28 +111,30 @@ add_action('template_redirect', static function () {
         } elseif ($state['username'] === '' || $password === '') {
             $state['errors']->add('missing_fields', 'Enter your username or registered email address and password.');
         } else {
-            // Basic local form throttle; existing WordPress authentication hooks still run.
-            $address = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-            $key = 'tcs_login_attempts_' . hash_hmac('sha256', $address, wp_salt('auth'));
-            $attempts = (int) get_transient($key);
-            if ($attempts >= 10) {
-                $state['errors']->add('too_many_attempts', 'Too many sign-in attempts. Please wait ten minutes and try again.');
+            $user = wp_signon([
+                'user_login'    => $state['username'],
+                'user_password' => $password,
+                'remember'      => $state['remember'],
+            ], is_ssl());
+
+            if (is_wp_error($user)) {
+                $state['errors'] = $user;
             } else {
-                set_transient($key, $attempts + 1, 10 * MINUTE_IN_SECONDS);
-                $user = wp_signon([
-                    'user_login' => $state['username'],
-                    'user_password' => $password,
-                    'remember' => $state['remember'],
-                ], is_ssl());
-                if (is_wp_error($user)) {
-                    $state['errors'] = $user;
-                } else {
-                    wp_set_current_user($user->ID);
-                    // Respect redirect customizations, then validate the final URL again.
-                    $redirect = apply_filters('login_redirect', $destination, $requested, $user);
-                    wp_safe_redirect(tcs_login_safe_destination(is_string($redirect) ? $redirect : ''));
-                    exit;
-                }
+                wp_set_current_user($user->ID);
+
+                $redirect = apply_filters(
+                    'login_redirect',
+                    $destination,
+                    $requested,
+                    $user
+                );
+
+                wp_safe_redirect(
+                    tcs_login_safe_destination(
+                        is_string($redirect) ? $redirect : ''
+                    )
+                );
+                exit;
             }
         }
     }
