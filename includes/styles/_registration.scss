@@ -34,7 +34,7 @@
         font-size: clamp(2.25rem, 6vw, 3.5rem);
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+        text-shadow: 2px 2px $dark-red;
     }
 
     p {
