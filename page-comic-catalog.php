@@ -311,13 +311,11 @@ get_header();
                             class="letter-btn <?php echo $letter === $l ? 'active' : ''; ?>"
                             data-letter="<?php echo esc_attr($l); ?>"
                             <?php if (
-                                    $is_series_view &&
-                                    (
-                                        !$series_letters['complete'] ||
-                                        !in_array($l, $series_letters['letters'], true)
-                                    )
-                                ) : ?>
-                                    style="display: none;"
+                                $is_series_view &&
+                                !empty($series_letters['complete']) &&
+                                !in_array($l, $series_letters['letters'], true)
+                            ) : ?>
+                                style="display: none;"
                             <?php endif; ?>
                             >
                             <?php echo esc_html($l); ?>
@@ -338,13 +336,11 @@ get_header();
                         class="letter-btn <?php echo $letter === '#' ? 'active' : ''; ?>"
                         data-letter="#"
                         <?php if (
-                                $is_series_view &&
-                                (
-                                    !$series_letters['complete'] ||
-                                    !in_array('#', $series_letters['letters'], true)
-                                )
-                            ) : ?>
-                                style="display: none;"
+                            $is_series_view &&
+                            !empty($series_letters['complete']) &&
+                            !in_array('#', $series_letters['letters'], true)
+                        ) : ?>
+                            style="display: none;"
                         <?php endif; ?>
                         >
                         #
