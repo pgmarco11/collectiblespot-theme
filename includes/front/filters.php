@@ -91,4 +91,91 @@ function defer_scripts($tag, $handle, $src) {
 }
 add_filter('script_loader_tag', 'defer_scripts', 10, 3);
 
+function tcs_hide_empty_main_menu_categories($items, $args) {
+    if (is_admin() || ($args->theme_location ?? '') !== 'main') {
+        return $items;
+    }
+
+    $category_ids = get_terms([
+        'taxonomy' => 'category',
+        'hide_empty' => true,
+        'hierarchical' => true,
+        'fields' => 'ids',
+    ]);
+
+    if (is_wp_error($category_ids)) {
+        return $items;
+    }
+
+    $visible_categories = array_fill_keys(
+        array_map('intval', $category_ids),
+        true
+    );
+
+    $all = [];
+    $kept = [];
+
+    foreach ($items as $item) {
+        $all[(int) $item->ID] = $item;
+
+        $is_category = (
+            $item->type === 'taxonomy' &&
+            $item->object === 'category'
+        );
+
+        if (
+            $is_category &&
+            !isset($visible_categories[(int) $item->object_id])
+        ) {
+            continue;
+        }
+
+        $kept[(int) $item->ID] = $item;
+    }
+
+    // Preserve other links beneath a removed category.
+    foreach ($kept as $item) {
+        $parent = (int) $item->menu_item_parent;
+        $seen = [(int) $item->ID => true];
+
+        while ($parent && !isset($kept[$parent])) {
+            if (!isset($all[$parent]) || isset($seen[$parent])) {
+                $parent = 0;
+                break;
+            }
+
+            $seen[$parent] = true;
+            $parent = (int) $all[$parent]->menu_item_parent;
+        }
+
+        $item->menu_item_parent = (string) $parent;
+    }
+
+    // Update dropdown classes after removing empty categories.
+    $parents = [];
+
+    foreach ($kept as $item) {
+        $parents[(int) $item->menu_item_parent] = true;
+    }
+
+    foreach ($kept as $item) {
+        $item->classes = array_values(array_diff(
+            (array) $item->classes,
+            ['menu-item-has-children']
+        ));
+
+        if (isset($parents[(int) $item->ID])) {
+            $item->classes[] = 'menu-item-has-children';
+        }
+    }
+
+    return array_values($kept);
+}
+
+add_filter(
+    'wp_nav_menu_objects',
+    'tcs_hide_empty_main_menu_categories',
+    20,
+    2
+);
 ?>
