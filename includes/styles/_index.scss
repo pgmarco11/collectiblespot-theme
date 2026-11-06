@@ -41,6 +41,14 @@ $sidebar-width: 500px; // Added to define a consistent sidebar width
 }
 .btn-secondary {
   background-color: $secondary-color;
+
+    &:hover {
+      background-color: $navy-blue;
+      border: inherit;
+    }
+}
+.btn-tertiary {
+  background-color: $tertiary-color;
 }
 /* bootstrap end items */
 

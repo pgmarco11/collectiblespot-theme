@@ -120,6 +120,31 @@ $type = $is_series_view
             $publisher_info['desc'] ?? ''
         );
     
+    $owned_issues = [];
+
+    if ($is_series_view && function_exists('tcs_inventory_repository')) {
+            $publisher_name = (string) ($publisher_info['name'] ?? '');
+            $owned_issues = tcs_inventory_repository()
+                ->owned_publisher_records($publisher_name);
+    }
+        
+    $requested_view = $_GET['publisher_view'] ?? '';
+    $show_my_issues = !empty($owned_issues)
+        && is_string($requested_view)
+        && wp_unslash($requested_view) === 'owned';
+        
+    $series_url = add_query_arg(
+        [
+                'publisher_id' => $selected_publisher,
+                'page'         => $page,
+                'letter'       => $letter,
+                'search'       => $search,
+        ],
+        get_permalink()
+    );
+        
+    $my_issues_url = add_query_arg('publisher_view', 'owned', $series_url);
+    
     /*
      * Decode any encoded HTML.
      */
@@ -205,16 +230,42 @@ get_header();
                         <span><?php the_title(); ?></span>
                     </h1>
 
-                    <div class="search-wrapper d-flex justify-content-end ms-md-auto">
-                        <input
-                            type="text"
-                            id="comic-search"
-                            value="<?php echo esc_attr($search); ?>"
-                            placeholder="<?php echo $is_series_view ? 'Search titles...' : 'Search publishers...'; ?>"
-                            aria-label="Search">
-                    </div>
+                    <?php if (!$show_my_issues) : ?>
+                        <div class="search-wrapper d-flex justify-content-end ms-md-auto">
+                            <input
+                                type="text"
+                                id="comic-search"
+                                value="<?php echo esc_attr($search); ?>"
+                                placeholder="<?php echo $is_series_view ? 'Search titles...' : 'Search publishers...'; ?>"
+                                aria-label="Search">
+                        </div>
+                    <?php endif; ?>
                 </div>
             </header>
+
+        <?php if ($owned_issues) : ?>
+            <nav class="nav nav-tabs mb-3" aria-label="Publisher views">
+                <a
+                    class="nav-link<?php echo $show_my_issues ? '' : ' active'; ?>"
+                    href="<?php echo esc_url($series_url); ?>"
+                    <?php if (!$show_my_issues) : ?>aria-current="page"<?php endif; ?>
+                >
+                    Series
+                </a>
+                <a
+                    class="nav-link<?php echo $show_my_issues ? ' active' : ''; ?>"
+                    href="<?php echo esc_url($my_issues_url); ?>"
+                    data-owned-view-param="publisher_view"
+                    <?php if ($show_my_issues) : ?>aria-current="page"<?php endif; ?>
+                >
+                    My Issues
+                </a>
+            </nav>
+        <?php endif; ?>
+
+        <?php if ($show_my_issues) : ?>
+            <?php require __DIR__ . '/parts/catalog-owned-issues.php'; ?>
+        <?php else : ?>
 
             <!-- FILTERS -->
             <div class="page-filters">
@@ -351,6 +402,7 @@ get_header();
             <!-- RENDER LIST -->
             <?php $comic_renderer->render_template( $initial_data ); ?>
 
+        <?php endif; ?>
         </section>
     </main>
 </div>

@@ -45,6 +45,32 @@ if ( ! $title_id ) {
     wp_die( '<p>No series selected.</p>' );
 }
 
+$owned_issues = function_exists('tcs_inventory_repository')
+    ? tcs_inventory_repository()->owned_series_records($title_id)
+    : [];
+
+$requested_view = $_GET['series_view'] ?? '';
+$show_my_issues = !empty($owned_issues)
+    && is_string($requested_view)
+    && wp_unslash($requested_view) === 'owned';
+
+$issues_args = ['title_id' => $title_id];
+
+if ($page > 1) {
+    $issues_args['page'] = $page;
+}
+
+if ($search !== '') {
+    $issues_args['search'] = $search;
+}
+
+$issues_url = add_query_arg(
+    $issues_args,
+    home_url('/comic-catalog/issues/')
+);
+
+$my_issues_url = add_query_arg('series_view', 'owned', $issues_url);
+
 /* -----------------------------------------------------------------
  *  Fetch series & issues
  * ----------------------------------------------------------------- */
@@ -267,65 +293,90 @@ ob_start();
                 </ul>
             </div>
 
-            <!-- SPINNER -->
-            <div id="loading-spinner" class="spinner-overlay" aria-live="polite" aria-label="Loading content">
-                <div class="spinner"></div>
-                <p>Loading...</p>
-            </div> 
+
 
             <!-- ISSUES LIST -->
             <div class="comic-issues-container">
-                <div class="issues-header">
-                    <h2>Issues</h2>
-                    <div class="search-wrapper">
-                        <input type="text" id="issue-search" value="<?php echo esc_attr( $search ); ?>" placeholder="Search issues..." aria-label="Search issues">
+                <?php if ($owned_issues) : ?>
+                    <nav class="nav nav-tabs mb-3" aria-label="Series views">
+                        <a
+                            class="nav-link<?php echo $show_my_issues ? '' : ' active'; ?>"
+                            href="<?php echo esc_url($issues_url); ?>"
+                            <?php if (!$show_my_issues) : ?>aria-current="page"<?php endif; ?>
+                        >
+                            Issues
+                        </a>
+                        <a
+                            class="nav-link<?php echo $show_my_issues ? ' active' : ''; ?>"
+                            href="<?php echo esc_url($my_issues_url); ?>"
+                            data-owned-view-param="series_view"
+                            <?php if ($show_my_issues) : ?>aria-current="page"<?php endif; ?>
+                        >
+                            My Issues
+                        </a>
+                    </nav>
+                <?php endif; ?>
+
+                <?php if ($show_my_issues) : ?>
+                    <?php require __DIR__ . '/parts/catalog-owned-issues.php'; ?>
+                <?php else : ?>
+                    <!-- SPINNER -->
+                    <div id="loading-spinner" class="spinner-overlay" aria-live="polite" aria-label="Loading content">
+                        <div class="spinner"></div>
+                        <p>Loading...</p>
+                    </div> 
+
+                    <div class="issues-header">
+                        <h2>Issues</h2>
+                        <div class="search-wrapper">
+                            <input type="text" id="issue-search" value="<?php echo esc_attr( $search ); ?>" placeholder="Search issues..." aria-label="Search issues">
+                        </div>
                     </div>
-                </div>
 
-                <div id="issues-list"
-                    data-total="<?php echo esc_attr($total_issues); ?>"
-                    data-page="<?php echo esc_attr($page); ?>"
-                    data-title-id="<?php echo esc_attr($title_id); ?>"     
-                    class="issues-list-container <?php echo (!empty($all_issues) ? 'server-rendered loaded' : ''); ?>">
+                    <div id="issues-list"
+                        data-total="<?php echo esc_attr($total_issues); ?>"
+                        data-page="<?php echo esc_attr($page); ?>"
+                        data-title-id="<?php echo esc_attr($title_id); ?>"     
+                        class="issues-list-container <?php echo (!empty($all_issues) ? 'server-rendered loaded' : ''); ?>">
 
-                    <?php if (!empty($all_issues)) : ?>
+                        <?php if (!empty($all_issues)) : ?>
 
-                            <ul class="issues-list">
-                            <?php foreach ($all_issues as $issue) :
+                                <ul class="issues-list">
+                                <?php foreach ($all_issues as $issue) :
 
-                                if (empty($issue['id'])) {
-                                    continue;
-                                }
+                                    if (empty($issue['id'])) {
+                                        continue;
+                                    }
 
-                                $metron_id = (int) $issue['id'];
+                                    $metron_id = (int) $issue['id'];
 
-                                $cv_issue = $cv_info_batch[$metron_id] ?? [];
+                                    $cv_issue = $cv_info_batch[$metron_id] ?? [];
 
-                                include $issue_template;
+                                    include $issue_template;
 
-                                endforeach; ?>
-                            </ul>
+                                    endforeach; ?>
+                                </ul>
 
-                    <?php else : ?>
+                        <?php else : ?>
 
-                        <p class="no-results">
-                            <?php if (!empty($search)) : ?>
-                                No issues matching "<?php echo esc_html($search); ?>" on page <?php echo $page; ?>.
-                            <?php else : ?>
-                                No issues found for this series on page <?php echo $page; ?>.<br>
-                                <small>(Debug: total_issues = <?php echo $total_issues; ?>, results count = <?php echo count($all_issues); ?>)</small>
-                            <?php endif; ?>
-                        </p>
+                            <p class="no-results">
+                                <?php if (!empty($search)) : ?>
+                                    No issues matching "<?php echo esc_html($search); ?>" on page <?php echo $page; ?>.
+                                <?php else : ?>
+                                    No issues found for this series on page <?php echo $page; ?>.<br>
+                                    <small>(Debug: total_issues = <?php echo $total_issues; ?>, results count = <?php echo count($all_issues); ?>)</small>
+                                <?php endif; ?>
+                            </p>
 
-                    <?php endif; ?>
-                </div>
+                        <?php endif; ?>
+                    </div>
           
-                <!-- PAGINATION -->
-                <?php
-                $range = 2;
-                $start = max(1, $page - $range);
-                $end   = min($total_pages, $page + $range);
-                ?>
+                    <!-- PAGINATION -->
+                    <?php
+                    $range = 2;
+                    $start = max(1, $page - $range);
+                    $end   = min($total_pages, $page + $range);
+                    ?>
                     <?php if ( $total_pages > 1 ) : ?>
                         <div id="pagination-wrapper" class="pagination-wrapper">
                             <p>Page <?php echo $page; ?> of <?php echo $total_pages; ?></p>
@@ -357,7 +408,7 @@ ob_start();
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>           
-
+                <?php endif; ?>
             </div>
         </section>
     </main>
