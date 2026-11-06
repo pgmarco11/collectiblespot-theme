@@ -120,18 +120,33 @@ $type = $is_series_view
             $publisher_info['desc'] ?? ''
         );
     
-    $owned_issues = [];
+        $owned_series = [];
 
-    if ($is_series_view && function_exists('tcs_inventory_repository')) {
+        if ($is_series_view && function_exists('tcs_inventory_repository')) {
             $publisher_name = (string) ($publisher_info['name'] ?? '');
-            $owned_issues = tcs_inventory_repository()
+            $owned_series = tcs_inventory_repository()
                 ->owned_publisher_records($publisher_name);
-    }
         
-    $requested_view = $_GET['publisher_view'] ?? '';
-    $show_my_issues = !empty($owned_issues)
-        && is_string($requested_view)
-        && wp_unslash($requested_view) === 'owned';
+            foreach ($owned_series as $record) {
+                $series_id = (int) $record['series_id'];
+        
+                if ($series_id <= 0) {
+                    continue;
+                }
+        
+                if (
+                    !isset($owned_series[$series_id]) ||
+                    ($owned_series[$series_id]['cover'] === '' && $record['cover'] !== '')
+                ) {
+                    $owned_series[$series_id] = $record;
+                }
+            }
+        }
+        
+        $requested_view = $_GET['publisher_view'] ?? '';
+        $show_my_series = !empty($owned_series)
+            && is_string($requested_view)
+            && wp_unslash($requested_view) === 'owned';
         
     $series_url = add_query_arg(
         [
@@ -230,7 +245,7 @@ get_header();
                         <span><?php the_title(); ?></span>
                     </h1>
 
-                    <?php if (!$show_my_issues) : ?>
+                    <?php if (!$show_my_series) : ?>
                         <div class="search-wrapper d-flex justify-content-end ms-md-auto">
                             <input
                                 type="text"
@@ -243,28 +258,28 @@ get_header();
                 </div>
             </header>
 
-        <?php if ($owned_issues) : ?>
+        <?php if ($owned_series) : ?>
             <nav class="nav nav-tabs mb-3" aria-label="Publisher views">
                 <a
-                    class="nav-link<?php echo $show_my_issues ? '' : ' active'; ?>"
+                    class="nav-link<?php echo $show_my_series ? '' : ' active'; ?>"
                     href="<?php echo esc_url($series_url); ?>"
-                    <?php if (!$show_my_issues) : ?>aria-current="page"<?php endif; ?>
+                    <?php if (!$show_my_series) : ?>aria-current="page"<?php endif; ?>
                 >
                     Series
                 </a>
                 <a
-                    class="nav-link<?php echo $show_my_issues ? ' active' : ''; ?>"
+                    class="nav-link<?php echo $show_my_series ? ' active' : ''; ?>"
                     href="<?php echo esc_url($my_issues_url); ?>"
                     data-owned-view-param="publisher_view"
-                    <?php if ($show_my_issues) : ?>aria-current="page"<?php endif; ?>
+                    <?php if ($show_my_series) : ?>aria-current="page"<?php endif; ?>
                 >
                     My Issues
                 </a>
             </nav>
         <?php endif; ?>
 
-        <?php if ($show_my_issues) : ?>
-            <?php require __DIR__ . '/parts/catalog-owned-issues.php'; ?>
+        <?php if ($show_my_series) : ?>
+            <?php require __DIR__ . '/parts/catalog-owned-series.php'; ?>
         <?php else : ?>
 
             <!-- FILTERS -->
