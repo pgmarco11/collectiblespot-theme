@@ -37,6 +37,13 @@ $type = $is_series_view
         ? 'books'
         : 'publishers';
 
+$requested_view = $_GET['publisher_view'] ?? '';
+
+$show_my_series = $is_series_view
+    && is_user_logged_in()
+    && is_string($requested_view)
+    && wp_unslash($requested_view) === 'owned';
+
 /* -----------------------------------------------------------------
  * Renderer
  * ----------------------------------------------------------------- */
@@ -47,8 +54,10 @@ $type = $is_series_view
 * Fetch data
 * ----------------------------------------------------------------- */
  
- if ($is_series_view) {
-     $data = $comic_renderer->get_series(
+if ($show_my_series) {
+    $data = ['items' => [], 'total' => 0];
+} elseif ($is_series_view) {
+    $data = $comic_renderer->get_series(
          $selected_publisher,
          $page,
          $per_page,
@@ -111,9 +120,35 @@ $type = $is_series_view
  /*
   * Only request publisher details when a real publisher is selected.
   */
-    $publisher_info = $is_series_view
-        ? $comic_renderer->get_publisher_info($selected_publisher)
-        : [];
+    $publisher_info = [];
+
+    if ($is_series_view) {
+        $repository = tcs_inventory_repository();
+        $publisher_info = $repository->local_publisher_info(
+            $selected_publisher
+        );
+    
+        if (!$show_my_series) {
+            $fresh = $comic_renderer->get_publisher_info(
+                $selected_publisher
+            );
+    
+            if (
+                is_array($fresh)
+                && empty($fresh['error'])
+                && (int) ($fresh['id'] ?? 0) === $selected_publisher
+                && is_string($fresh['name'] ?? null)
+                && trim($fresh['name']) !== ''
+            ) {
+                $publisher_info = $fresh;
+    
+                $repository->remember_publisher_identity(
+                    $selected_publisher,
+                    $fresh['name']
+                );
+            }
+        }
+    }
  
     $publisher_description =
         $comic_renderer->normalize_publisher_description(
@@ -162,12 +197,7 @@ $type = $is_series_view
                         $owned_series[$series_id]['cover'] = $record['cover'];
                     }
                 }
-    }
-        
-    $requested_view = $_GET['publisher_view'] ?? '';
-    $show_my_series = !empty($owned_series)
-        && is_string($requested_view)
-        && wp_unslash($requested_view) === 'owned';
+    }     
         
     $series_args = ['publisher_id' => $selected_publisher];
 
@@ -284,7 +314,7 @@ get_header();
                 </div>
             </header>
 
-        <?php if ($owned_series) : ?>
+            <?php if ($owned_series || $show_my_series) : ?>
             <nav class="nav nav-tabs mb-3" aria-label="Publisher views">
                 <a
                     class="nav-link<?php echo $show_my_series ? '' : ' active'; ?>"
@@ -308,7 +338,19 @@ get_header();
             if ($show_my_series) :
                 $owned_records = $owned_series;
                 $owned_template = 'catalog-owned-series.php';
-                require __DIR__ . '/parts/catalog-owned-page.php';
+                
+                if ($owned_records) {
+                    require __DIR__ . '/parts/catalog-owned-page.php';
+                } else {
+                    $message = empty($publisher_info['name'])
+                        ? 'Publisher details are unavailable locally. Open the Series tab once when the comic service is available to save the publisher mapping.'
+                        : 'You have no series from this publisher in your collection.';
+                
+                    echo '<div id="catalog-owned-issues">'
+                        . '<p class="no-results">'
+                        . esc_html($message)
+                        . '</p></div>';
+                }
             ?>
             <?php else: ?>
 
