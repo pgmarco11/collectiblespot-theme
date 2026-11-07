@@ -77,14 +77,10 @@ $my_issues_url = add_query_arg('series_view', 'owned', $issues_url);
 $comic_renderer = new ComicRenderer();
 
 if ($show_my_issues) {
-    $cached_series = get_transient("metron:series:{$title_id}");
+    $cached_series = comicbooks_read_series_header($title_id);
 
-    if (
-        !is_array($cached_series)
-        || (int) ($cached_series['id'] ?? 0) !== $title_id
-    ) {
-        $cached_series = [];
-    }
+    // Refresh expired or incomplete details without blocking My Issues.
+    comicbooks_queue_series_metadata($title_id);
 
     $first_owned = $owned_issues[0] ?? [];
 
@@ -330,31 +326,111 @@ ob_start();
             </header>
 
             <!-- SERIES META -->
-            <div class="comic-series-container">
-                <ul style="display:flex;gap:.5rem;justify-content:flex-start;">
-                    <li><?php echo esc_html( $series['publisher']['name'] ?? 'N/A' ); ?> / </li>
-                    <li><?php echo esc_html( $series['year_began'] ?? 'N/A' ); ?> — <?php echo esc_html( $series['year_end'] ?? 'Ongoing' ); ?> / </li>
-                    <li>Volume <?php echo esc_html( $series['volume'] ?? 'N/A' ); ?> / </li>
-                    <li>
-                    <?php 
-                        $issue_count = isset($series['issue_count']) ? (int) $series['issue_count'] : 0;
-                        echo esc_html(
-                            $issue_count > 0
-                                ? $issue_count . ' issues'
-                                : 'N/A'
-                        );
-                        ?>
-                    </li>
-                </ul>
-                <ul>
-                    <li><strong>Series Type:</strong> <?php echo esc_html( $series['series_type']['name'] ?? 'N/A' ); ?></li>
-                    <?php if ( ! empty( $series['genres'] ) && is_array( $series['genres'] ) ) : ?>
-                        <li><strong>Genres:</strong> <?php echo esc_html( implode( ', ', array_column( $series['genres'], 'name' ) ) ); ?></li>
-                    <?php endif; ?>
-                </ul>
+            <div class="comic-series-container" id="tcs-series-header">
+                <?php
+                if (
+                    !$show_my_issues
+                    || comicbooks_valid_series_header($series, $title_id)
+                ) :
+                    ?>
+                    <?php echo comicbooks_series_header_html($series); ?>
+                <?php else : ?>
+                    <p role="status">Loading series details…</p>
+                <?php endif; ?>
             </div>
 
+            <?php
+            if (
+                $show_my_issues
+                && !comicbooks_valid_series_header($series, $title_id)
+            ) :
+                ?>
+                <script>
+                (() => {
+                    const root = document.getElementById('tcs-series-header');
 
+                    if (!root) return;
+
+                    const url = <?php echo wp_json_encode(admin_url('admin-ajax.php')); ?>;
+                    const seriesId = <?php echo wp_json_encode((string) $title_id); ?>;
+                    const nonce = <?php echo wp_json_encode(wp_create_nonce('comicbooks_fetchers_data')); ?>;
+
+                    const delay = ms => new Promise(
+                        resolve => setTimeout(resolve, ms)
+                    );
+
+                    async function poll() {
+                        root.innerHTML =
+                            '<p role="status">Loading series details…</p>';
+
+                        for (let attempt = 0; attempt < 20; attempt++) {
+                            await delay(3000);
+
+                            if (!root.isConnected) return;
+
+                            const controller = new AbortController();
+
+                            const timeout = setTimeout(
+                                () => controller.abort(),
+                                5000
+                            );
+
+                            try {
+                                const response = await fetch(url, {
+                                    method: 'POST',
+                                    credentials: 'same-origin',
+                                    signal: controller.signal,
+                                    body: new URLSearchParams({
+                                        action: 'tcs_read_series_header',
+                                        series_id: seriesId,
+                                        nonce
+                                    })
+                                });
+
+                                if (
+                                    response.status === 403
+                                    || response.status === 401
+                                ) {
+                                    root.textContent =
+                                        'Your session expired. Reload to load series details.';
+                                    return;
+                                }
+
+                                if (!response.ok) continue;
+
+                                const result = await response.json();
+
+                                if (
+                                    result.success
+                                    && result.data.pending === false
+                                ) {
+                                    root.innerHTML = result.data.html;
+                                    return;
+                                }
+                            } catch {
+                                // Retry a temporary connection failure.
+                            } finally {
+                                clearTimeout(timeout);
+                            }
+                        }
+
+                        root.textContent =
+                            'Series details are temporarily unavailable. ';
+
+                        const retry = document.createElement('button');
+
+                        retry.type = 'button';
+                        retry.className = 'button';
+                        retry.textContent = 'Try again';
+                        retry.addEventListener('click', poll, { once: true });
+
+                        root.append(retry);
+                    }
+
+                    poll();
+                })();
+                </script>
+            <?php endif; ?>
 
             <!-- ISSUES LIST -->
             <div class="comic-issues-container">
