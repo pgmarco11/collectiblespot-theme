@@ -50,7 +50,7 @@ $owned_issues = function_exists('tcs_inventory_repository')
     : [];
 
 $requested_view = $_GET['series_view'] ?? '';
-$show_my_issues = !empty($owned_issues)
+$show_my_issues = is_user_logged_in()
     && is_string($requested_view)
     && wp_unslash($requested_view) === 'owned';
 
@@ -75,7 +75,44 @@ $my_issues_url = add_query_arg('series_view', 'owned', $issues_url);
  *  Fetch series & issues
  * ----------------------------------------------------------------- */
 $comic_renderer = new ComicRenderer();
-$data           = $comic_renderer->get_series_issues( $title_id, $page, $search );
+
+if ($show_my_issues) {
+    $cached_series = get_transient("metron:series:{$title_id}");
+
+    if (
+        !is_array($cached_series)
+        || (int) ($cached_series['id'] ?? 0) !== $title_id
+    ) {
+        $cached_series = [];
+    }
+
+    $first_owned = $owned_issues[0] ?? [];
+
+    $series = array_replace([
+        'id'         => $title_id,
+        'name'       => $first_owned['title'] ?? 'Comic Series',
+        'volume'     => ($first_owned['volume'] ?? '') ?: 'N/A',
+        'year_began' => 'N/A',
+        'year_end'   => 'N/A',
+        'publisher'  => [
+            'name' => $first_owned['publisher'] ?? 'N/A',
+        ],
+    ], $cached_series);
+
+    $data = [
+        'series'     => $series,
+        'issue_list' => [
+            'results' => [],
+            'count'   => 0,
+        ],
+    ];
+} else {
+    $data = $comic_renderer->get_series_issues(
+        $title_id,
+        $page,
+        $search
+    );
+}
 
 
 if (isset($data['error'])) {
@@ -101,6 +138,30 @@ if (isset($data['error'])) {
         ],
         home_url('/comic-catalog/issues/')
     );
+
+    if (
+        is_string($requested_view)
+        && wp_unslash($requested_view) === 'owned'
+    ) {
+        $retry_url = add_query_arg(
+            'series_view',
+            'owned',
+            $retry_url
+        );
+    
+        $requested_owned_page = $_GET['owned_page'] ?? '';
+    
+        if (
+            is_string($requested_owned_page)
+            && ctype_digit($requested_owned_page)
+        ) {
+            $retry_url = add_query_arg(
+                'owned_page',
+                max(1, (int) $requested_owned_page),
+                $retry_url
+            );
+        }
+    }
 
     $automatic_retry_url = add_query_arg(
         'metron_retry',
@@ -297,7 +358,7 @@ ob_start();
 
             <!-- ISSUES LIST -->
             <div class="comic-issues-container">
-                <?php if ($owned_issues) : ?>
+            <?php if ($owned_issues || $show_my_issues) : ?>
                     <nav class="nav nav-tabs mb-3" aria-label="Series views">
                         <a
                             class="nav-link<?php echo $show_my_issues ? '' : ' active'; ?>"
@@ -322,7 +383,15 @@ ob_start();
                         
                         $owned_records = $owned_issues;
                         $owned_template = 'catalog-owned-issues.php';
-                        require __DIR__ . '/parts/catalog-owned-page.php';
+                        
+                        if ($owned_records) {
+                            require __DIR__ . '/parts/catalog-owned-page.php';
+                        } else {
+                            echo '<div id="catalog-owned-issues">'
+                                . '<p class="no-results">'
+                                . 'You have no issues from this series in your collection.'
+                                . '</p></div>';
+                        }
                         
                 ?>
                 <?php else : ?>
