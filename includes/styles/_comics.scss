@@ -87,13 +87,45 @@
   }   
 }
 .page-template-page-comic-catalog,
-.page-template-page-comic-issues  {
-  .page-section {   
-    .comic-issues-container {
-      .nav-tabs .nav-link {
-        background-color: var(--bs-body-bg);
-        margin: 0 0.25rem 0 0;
+.page-template-page-comic-issues {
+  .page-section {
+    .nav-tabs {
+      --bs-nav-tabs-border-color: var(--wp--preset--color--cream);
+      --bs-nav-tabs-link-active-color: var(--wp--preset--color--navy-blue);
+      --bs-nav-tabs-link-active-bg: var(--wp--preset--color--cream);
+      --bs-nav-tabs-link-active-border-color: var(--wp--preset--color--cream);
+
+      .nav-link {
+        margin-right: 0.25rem;
+        margin-bottom: 0;
+        color: var(--wp--preset--color--white);
+        background-color: var(--wp--preset--color--royal-blue);
+
+        &:hover {
+          text-decoration: underline;
+        }
+
+        &.active {
+          color: var(--bs-nav-tabs-link-active-color);
+          background-color: var(--bs-nav-tabs-link-active-bg);
+          font-weight: 700;
+        }
       }
+    }
+
+    #catalog-owned-issues .issue-link {
+      color: var(--wp--preset--color--navy-blue);
+
+      &:hover > span {
+        text-decoration: underline;
+      }
+    }
+
+    .nav-tabs .nav-link:focus-visible,
+    #catalog-owned-issues .issue-link:focus-visible {
+      outline: 2px solid var(--wp--preset--color--navy-blue);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 2px var(--wp--preset--color--cream);
     }
   }
 }

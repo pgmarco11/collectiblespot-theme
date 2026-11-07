@@ -127,20 +127,41 @@ $type = $is_series_view
         $owned_issues = tcs_inventory_repository()
                 ->owned_publisher_records($publisher_name);
         
-        foreach ($owned_issues as $record) {
-            $series_id = (int) $record['series_id'];
-        
-            if ($series_id <= 0) {
-                continue;
-            }
-        
-            if (
-                !isset($owned_series[$series_id]) ||
-                ($owned_series[$series_id]['cover'] === '' && $record['cover'] !== '')
-            ) {
-                $owned_series[$series_id] = $record;
-            }
-        }
+                $catalog_series_by_id = array_column(
+                    $initial_data['items'],
+                    null,
+                    'series_id'
+                );
+                
+                foreach ($owned_issues as $record) {
+                    $series_id = (int) $record['series_id'];
+                
+                    if ($series_id <= 0) {
+                        continue;
+                    }
+                
+                    if (!isset($owned_series[$series_id])) {
+                        $catalog_series = $catalog_series_by_id[$series_id] ?? [];
+                        $cached_series = get_transient("metron:series:{$series_id}");
+                        $cached_series = is_array($cached_series) ? $cached_series : [];
+                
+                        $owned_series[$series_id] = $record;
+                        $owned_series[$series_id]['owned_count'] = 0;
+                        $owned_series[$series_id]['year_began'] =
+                            $cached_series['year_began'] ?? $catalog_series['year_began'] ?? '';
+                        $owned_series[$series_id]['volume'] =
+                            $cached_series['volume']
+                            ?? $catalog_series['volume']
+                            ?? $record['volume']
+                            ?? '';
+                    }
+                
+                    ++$owned_series[$series_id]['owned_count'];
+                
+                    if ($owned_series[$series_id]['cover'] === '' && $record['cover'] !== '') {
+                        $owned_series[$series_id]['cover'] = $record['cover'];
+                    }
+                }
     }
         
     $requested_view = $_GET['publisher_view'] ?? '';
@@ -278,7 +299,7 @@ get_header();
                     data-owned-view-param="publisher_view"
                     <?php if ($show_my_series) : ?>aria-current="page"<?php endif; ?>
                 >
-                    My Issues
+                    My Series
                 </a>
             </nav>
         <?php
