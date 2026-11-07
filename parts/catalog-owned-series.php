@@ -1,10 +1,11 @@
 <div id="catalog-owned-issues">
     <ul class="issues-list">
-        <?php foreach ($owned_series as $series_id => $record) : ?>
+    <?php foreach ($owned_records as $series_id => $record) : ?>
             <?php
             $owned_series_url = add_query_arg(
                 [
                     'title_id'    => $series_id,
+                    'page'        => 1,
                     'series_view' => 'owned',
                 ],
                 home_url('/comic-catalog/issues/')

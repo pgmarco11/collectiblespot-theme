@@ -122,47 +122,52 @@ $type = $is_series_view
     
         $owned_series = [];
 
-        if ($is_series_view && function_exists('tcs_inventory_repository')) {
-            $publisher_name = (string) ($publisher_info['name'] ?? '');
-            $owned_series = tcs_inventory_repository()
+    if ($is_series_view && function_exists('tcs_inventory_repository')) {
+        $publisher_name = (string) ($publisher_info['name'] ?? '');
+        $owned_issues = tcs_inventory_repository()
                 ->owned_publisher_records($publisher_name);
         
-            foreach ($owned_series as $record) {
-                $series_id = (int) $record['series_id'];
+        foreach ($owned_issues as $record) {
+            $series_id = (int) $record['series_id'];
         
-                if ($series_id <= 0) {
-                    continue;
-                }
+            if ($series_id <= 0) {
+                continue;
+            }
         
-                if (
-                    !isset($owned_series[$series_id]) ||
-                    ($owned_series[$series_id]['cover'] === '' && $record['cover'] !== '')
-                ) {
-                    $owned_series[$series_id] = $record;
-                }
+            if (
+                !isset($owned_series[$series_id]) ||
+                ($owned_series[$series_id]['cover'] === '' && $record['cover'] !== '')
+            ) {
+                $owned_series[$series_id] = $record;
             }
         }
+    }
         
-        $requested_view = $_GET['publisher_view'] ?? '';
-        $show_my_series = !empty($owned_series)
-            && is_string($requested_view)
-            && wp_unslash($requested_view) === 'owned';
+    $requested_view = $_GET['publisher_view'] ?? '';
+    $show_my_series = !empty($owned_series)
+        && is_string($requested_view)
+        && wp_unslash($requested_view) === 'owned';
         
-    $series_url = add_query_arg(
-        [
-                'publisher_id' => $selected_publisher,
-                'page'         => $page,
-                'letter'       => $letter,
-                'search'       => $search,
-        ],
-        get_permalink()
-    );
-        
+    $series_args = ['publisher_id' => $selected_publisher];
+
+    if ($page > 1) {
+        $series_args['page'] = $page;
+    }
+            
+    if ($letter !== '' && $letter !== 'all') {
+        $series_args['letter'] = $letter;
+    }
+            
+    if ($search !== '') {
+        $series_args['search'] = $search;
+    }
+            
+    $series_url = add_query_arg($series_args, get_permalink());
     $my_issues_url = add_query_arg('publisher_view', 'owned', $series_url);
     
     /*
      * Decode any encoded HTML.
-     */
+    */
     $publisher_description = html_entity_decode(
         $publisher_description,
         ENT_QUOTES | ENT_HTML5,
@@ -276,11 +281,15 @@ get_header();
                     My Issues
                 </a>
             </nav>
-        <?php endif; ?>
-
-        <?php if ($show_my_series) : ?>
-            <?php require __DIR__ . '/parts/catalog-owned-series.php'; ?>
-        <?php else : ?>
+        <?php
+            endif; 
+        
+            if ($show_my_series) :
+                $owned_records = $owned_series;
+                $owned_template = 'catalog-owned-series.php';
+                require __DIR__ . '/parts/catalog-owned-page.php';
+            ?>
+            <?php else: ?>
 
             <!-- FILTERS -->
             <div class="page-filters">

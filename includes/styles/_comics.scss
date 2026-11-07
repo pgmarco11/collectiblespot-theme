@@ -86,3 +86,14 @@
     }
   }   
 }
+.page-template-page-comic-catalog,
+.page-template-page-comic-issues  {
+  .page-section {   
+    .comic-issues-container {
+      .nav-tabs .nav-link {
+        background-color: var(--bs-body-bg);
+        margin: 0 0.25rem 0 0;
+      }
+    }
+  }
+}

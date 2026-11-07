@@ -1,6 +1,6 @@
 <div id="catalog-owned-issues">
     <ul class="issues-list">
-        <?php foreach ($owned_issues as $record) : ?>
+        <?php foreach ($owned_records as $record) : ?>
             <li class="issue-item">
                 <a class="issue-link" href="<?php echo esc_url($record['catalog_url']); ?>">
                     <?php if ($record['cover'] !== '') : ?>

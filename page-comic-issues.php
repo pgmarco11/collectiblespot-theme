@@ -315,10 +315,16 @@ ob_start();
                             My Issues
                         </a>
                     </nav>
-                <?php endif; ?>
-
-                <?php if ($show_my_issues) : ?>
-                    <?php require __DIR__ . '/parts/catalog-owned-issues.php'; ?>
+                <?php 
+                    endif;
+                    
+                    if ($show_my_issues) :
+                        
+                        $owned_records = $owned_issues;
+                        $owned_template = 'catalog-owned-issues.php';
+                        require __DIR__ . '/parts/catalog-owned-page.php';
+                        
+                ?>
                 <?php else : ?>
                     <!-- SPINNER -->
                     <div id="loading-spinner" class="spinner-overlay" aria-live="polite" aria-label="Loading content">
