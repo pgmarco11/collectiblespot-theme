@@ -26,41 +26,20 @@
                     <?php endif; ?>
                     <?php
                         $series_id = (int) $series_id;
-                        $series_year = absint($record['year_began'] ?? 0);
-                        
-                        if ($series_year === 0) {
-                            $series_key = "metron:series:{$series_id}";
-                            $series_metadata = get_transient($series_key);
+
+                        if (absint($record['year_began'] ?? 0) === 0) {
+                            $cached = get_transient("metron:series:{$series_id}");
                         
                             if (
-                                !is_array($series_metadata) ||
-                                empty($series_metadata['year_began'])
+                                is_array($cached)
+                                && empty($cached['error'])
+                                && (int) ($cached['id'] ?? 0) === $series_id
                             ) {
-                                $metron_client = new MetronClient();
-                                $series_metadata = $metron_client->api_get(
-                                    $metron_client->api_base . "series/{$series_id}/"
-                                );
-                        
-                                if (
-                                    is_array($series_metadata) &&
-                                    empty($series_metadata['error']) &&
-                                    (int) ($series_metadata['id'] ?? 0) === $series_id &&
-                                    !empty($series_metadata['year_began'])
-                                ) {
-                                    set_transient(
-                                        $series_key,
-                                        $series_metadata,
-                                        14 * DAY_IN_SECONDS
-                                    );
-                                }
+                                $record['year_began'] = $cached['year_began'] ?? '';
                             }
                         
-                            if (
-                                is_array($series_metadata) &&
-                                empty($series_metadata['error']) &&
-                                (int) ($series_metadata['id'] ?? 0) === $series_id
-                            ) {
-                                $record['year_began'] = $series_metadata['year_began'] ?? '';
+                            if (absint($record['year_began'] ?? 0) === 0) {
+                                comicbooks_queue_series_metadata($series_id);
                             }
                         }
 
