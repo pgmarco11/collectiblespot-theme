@@ -25,6 +25,45 @@
                         >
                     <?php endif; ?>
                     <?php
+                        $series_id = (int) $series_id;
+                        $series_year = absint($record['year_began'] ?? 0);
+                        
+                        if ($series_year === 0) {
+                            $series_key = "metron:series:{$series_id}";
+                            $series_metadata = get_transient($series_key);
+                        
+                            if (
+                                !is_array($series_metadata) ||
+                                empty($series_metadata['year_began'])
+                            ) {
+                                $metron_client = new MetronClient();
+                                $series_metadata = $metron_client->api_get(
+                                    $metron_client->api_base . "series/{$series_id}/"
+                                );
+                        
+                                if (
+                                    is_array($series_metadata) &&
+                                    empty($series_metadata['error']) &&
+                                    (int) ($series_metadata['id'] ?? 0) === $series_id &&
+                                    !empty($series_metadata['year_began'])
+                                ) {
+                                    set_transient(
+                                        $series_key,
+                                        $series_metadata,
+                                        14 * DAY_IN_SECONDS
+                                    );
+                                }
+                            }
+                        
+                            if (
+                                is_array($series_metadata) &&
+                                empty($series_metadata['error']) &&
+                                (int) ($series_metadata['id'] ?? 0) === $series_id
+                            ) {
+                                $record['year_began'] = $series_metadata['year_began'] ?? '';
+                            }
+                        }
+
                         $details = [];
                         $year = absint($record['year_began']);
                         $volume = absint($record['volume']);
