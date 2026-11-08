@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: Comic Catalog
+Template Name: Comic Database
 */
 if ( ! defined( 'ABSPATH' ) ) {
     exit;

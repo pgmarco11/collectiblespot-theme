@@ -140,7 +140,7 @@ if ( have_posts() ) : ?>
                         if ( 0 === $index ) {
                             /*
                              * The root category is a direct link so it receives
-                             * the orange comic-catalog breadcrumb style.
+                             * the orange comic-database breadcrumb style.
                              */
                             ?>
                             <a href="<?php echo esc_url( $category_url ); ?>">

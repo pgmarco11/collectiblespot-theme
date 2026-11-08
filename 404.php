@@ -35,7 +35,7 @@ get_header();
 					</a>
 
 					<a class="button button--secondary"
-					   href="<?php echo esc_url( home_url( '/comic-catalog/' ) ); ?>">
+					   href="<?php echo esc_url( home_url( '/comic-database/' ) ); ?>">
 						<?php esc_html_e( 'Browse Comic Catalog', 'collectiblespot' ); ?>
 					</a>
 				</div>

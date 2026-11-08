@@ -66,7 +66,7 @@ if ($search !== '') {
 
 $issues_url = add_query_arg(
     $issues_args,
-    home_url('/comic-catalog/issues/')
+    home_url('/comic-database/issues/')
 );
 
 $my_issues_url = add_query_arg('series_view', 'owned', $issues_url);
@@ -132,7 +132,7 @@ if (isset($data['error'])) {
             'page' => $page,
             'search' => $search,
         ],
-        home_url('/comic-catalog/issues/')
+        home_url('/comic-database/issues/')
     );
 
     if (
@@ -310,11 +310,11 @@ ob_start();
             <!-- BREADCRUMBS & TITLE -->
             <header class="page-header">
                 <nav class="category-breadcrumbs">
-                    <a href="<?php echo esc_url( home_url( '/comic-catalog' ) ); ?>">Publishers</a>
+                    <a href="<?php echo esc_url( home_url( '/comic-database' ) ); ?>">Publishers</a>
                     <span class="separator">➤</span>
                     <?php if ( ! empty( $series['publisher']['id'] ) ) : ?>
                         <span class="category">
-                            <a href="<?php echo esc_url( add_query_arg( 'publisher_id', $series['publisher']['id'], home_url( '/comic-catalog/' ) ) ); ?>">
+                            <a href="<?php echo esc_url( add_query_arg( 'publisher_id', $series['publisher']['id'], home_url( '/comic-database/' ) ) ); ?>">
                                 <?php echo esc_html( $series['publisher']['name'] ?? '' ); ?>
                             </a>
                         </span>

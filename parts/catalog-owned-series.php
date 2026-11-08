@@ -8,7 +8,7 @@
                     'page'        => 1,
                     'series_view' => 'owned',
                 ],
-                home_url('/comic-catalog/issues/')
+                home_url('/comic-database/issues/')
             );
             ?>
             <li class="issue-item">
