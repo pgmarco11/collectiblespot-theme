@@ -156,8 +156,9 @@ if ($show_my_series) {
         );
     
         $owned_series = [];
+        $has_owned_series = false;
 
-    if ($is_series_view && function_exists('tcs_inventory_repository')) {
+    if ($show_my_series && function_exists('tcs_inventory_repository')) {
         $publisher_name = (string) ($publisher_info['name'] ?? '');
         $owned_issues = tcs_inventory_repository()
                 ->owned_publisher_records($publisher_name);
@@ -197,7 +198,18 @@ if ($show_my_series) {
                         $owned_series[$series_id]['cover'] = $record['cover'];
                     }
                 }
-    }     
+    }   
+    
+    if (
+        $is_series_view
+        && !$show_my_series
+        && function_exists('tcs_inventory_repository')
+    ) {
+        $has_owned_series = tcs_inventory_repository()
+            ->has_owned_publisher_records(
+                (string) ($publisher_info['name'] ?? '')
+            );
+    }
         
     $series_args = ['publisher_id' => $selected_publisher];
 
@@ -314,7 +326,7 @@ get_header();
                 </div>
             </header>
 
-            <?php if ($owned_series || $show_my_series) : ?>
+        <?php if ($owned_series || $has_owned_series || $show_my_series) : ?>
             <nav class="nav nav-tabs mb-3" aria-label="Publisher views">
                 <a
                     class="nav-link<?php echo $show_my_series ? '' : ' active'; ?>"
