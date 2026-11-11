@@ -141,7 +141,7 @@
                     <?php endwhile; ?>
                     <div class="nav text-center justify-content-center py-4"> 
                         <?php
-                        the_posts_pagination( array(
+                        collectibles_posts_pagination( array(
                             'mid_size'           => 2,
                             'prev_text'          => __('« Previous'),
                             'next_text'          => __('Next »'),

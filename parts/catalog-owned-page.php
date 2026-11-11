@@ -21,6 +21,22 @@ require __DIR__ . '/' . $owned_template;
 <?php if ($owned_total_pages > 1) : ?>
     <nav class="d-flex flex-wrap justify-content-center align-items-center gap-3 my-3"
          aria-label="Owned catalog pages">
+
+         <?php if ($owned_page > 1) : ?>
+            <a
+                class="btn btn-outline-light"
+                href="<?php
+                echo esc_url(
+                    add_query_arg(
+                        'owned_page',
+                        1,
+                        $my_issues_url
+                    )
+                );
+                ?>"
+            >First</a>
+        <?php endif; ?>
+
         <?php if ($owned_page > 1) : ?>
             <a class="btn btn-outline-light" href="<?php echo esc_url(
                 add_query_arg('owned_page', $owned_page - 1, $my_issues_url)
@@ -34,5 +50,21 @@ require __DIR__ . '/' . $owned_template;
                 add_query_arg('owned_page', $owned_page + 1, $my_issues_url)
             ); ?>">Next</a>
         <?php endif; ?>
+
+        <?php if ($owned_page < $owned_total_pages) : ?>
+            <a
+                class="btn btn-outline-light"
+                href="<?php
+                echo esc_url(
+                    add_query_arg(
+                        'owned_page',
+                        $owned_total_pages,
+                        $my_issues_url
+                    )
+                );
+                ?>"
+            >Last</a>
+        <?php endif; ?>
+
     </nav>
 <?php endif; ?>
