@@ -531,6 +531,14 @@ ob_start();
                     <?php if ( $total_pages > 1 ) : ?>
                         <div id="pagination-wrapper" class="pagination-wrapper">
                             <p>Page <?php echo $page; ?> of <?php echo $total_pages; ?></p>
+                            <a
+                                href="<?php echo esc_url(add_query_arg('page', 1)); ?>"
+                                class="page-btn"
+                                data-page="1"
+                                data-title-id="<?php echo esc_attr($title_id); ?>"
+                                data-search="<?php echo esc_attr($search); ?>"
+                                data-per-page="<?php echo esc_attr($per_page); ?>"
+                            >First</a>
                             <?php if ($page > 1) : ?>
                                 <a href="<?php echo esc_url(add_query_arg('page', $page - 1)); ?>" class="page-btn" data-page="<?php echo $page - 1; ?>" data-title-id="<?php echo esc_attr($title_id); ?>">Previous</a>
                             <?php endif; ?>
@@ -556,6 +564,14 @@ ob_start();
                                 >
                                     Next
                                 </a>
+                                <a
+                                    href="<?php echo esc_url(add_query_arg('page', $total_pages)); ?>"
+                                    class="page-btn"
+                                    data-page="<?php echo esc_attr($total_pages); ?>"
+                                    data-title-id="<?php echo esc_attr($title_id); ?>"
+                                    data-search="<?php echo esc_attr($search); ?>"
+                                    data-per-page="<?php echo esc_attr($per_page); ?>"
+                                >Last</a>
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>           
