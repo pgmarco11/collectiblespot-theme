@@ -65,16 +65,21 @@ function u_enqueue() {
         true
     );
 
-        // Enqueue theme scripts
-        if (isset($manifest['index.js'])) {
+    // Enqueue the theme bundle only when it contains JavaScript.
+    if (!empty($manifest['index.js'])) {
+        $script = $manifest['index.js'];
+        $script_path = get_template_directory() . '/public/' . $script;
+
+        if (is_file($script_path) && filesize($script_path) > 0) {
             wp_enqueue_script(
                 'collectibles-script',
-                get_template_directory_uri() . '/public/' . $manifest['index.js'],
+                get_template_directory_uri() . '/public/' . $script,
                 ['bootstrap-js'],
                 null,
                 true
             );
         }
+    }
 }
 
 // Defer Bootstrap JS

@@ -36,14 +36,9 @@ function collectible_posts_shortcode($atts) {
     // Initialize output
     $output = '<div class="collectible-grid">';
 
-    // Initialize post count
-    $post_count = 0;
-
     if ($query->have_posts()) {
         while ($query->have_posts()) {
-            $query->the_post();
-            $post_count++;
-
+            $query->the_post();   
             $ebay_price = get_post_meta(get_the_ID(), 'ebay_price', true);            
     
             if ($ebay_price) {
