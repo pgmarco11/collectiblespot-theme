@@ -242,8 +242,7 @@ $all_issues         = isset($issue_list['results']) && is_array($issue_list['res
 $total_issues       = (int) ($issue_list['count'] ?? 0);
 $metron_ids         = [];
 $collection_status  = [];
-$per_page           = 10;
-$total_pages        = max(1, (int) ceil($total_issues / $per_page));
+$total_pages = (int) ($data['total_pages'] ?? 1);
 
 /*
  * Build Comic Vine info for server-rendered issues.
@@ -523,58 +522,11 @@ ob_start();
                     </div>
           
                     <!-- PAGINATION -->
-                    <?php
-                    $range = 2;
-                    $start = max(1, $page - $range);
-                    $end   = min($total_pages, $page + $range);
-                    ?>
-                    <?php if ( $total_pages > 1 ) : ?>
-                        <div id="pagination-wrapper" class="pagination-wrapper">
-                            <p>Page <?php echo $page; ?> of <?php echo $total_pages; ?></p>
-                            <?php if ($page > 1) : ?>
-                                <a
-                                    href="<?php echo esc_url(add_query_arg('page', 1)); ?>"
-                                    class="page-btn"
-                                    data-page="1"
-                                    data-title-id="<?php echo esc_attr($title_id); ?>"
-                                    data-search="<?php echo esc_attr($search); ?>"
-                                    data-per-page="<?php echo esc_attr($per_page); ?>"
-                                >First</a>                            
-                                <a href="<?php echo esc_url(add_query_arg('page', $page - 1)); ?>" class="page-btn" data-page="<?php echo $page - 1; ?>" data-title-id="<?php echo esc_attr($title_id); ?>">Previous</a>
-                            <?php endif; ?>
-                            <?php for ($i = $start; $i <= $end; $i++) : 
-                                $is_active = $i == $page; ?>
-                                <a href="<?php echo $is_active ? '#' : esc_url(add_query_arg('page', $i)); ?>"
-                                   class="page-btn<?php echo $is_active ? ' active' : ''; ?>"
-                                   data-page="<?php echo $i; ?>"
-                                   data-title-id="<?php echo esc_attr($title_id); ?>">
-                                    <?php echo $i; ?>
-                                </a>
-                            <?php endfor; ?>
-                            <?php if ($page < $total_pages) : ?>
-                                <?php $next_page = $page + 1; ?>
-
-                                <a
-                                    href="<?php echo esc_url(add_query_arg('page', $next_page)); ?>"
-                                    class="page-btn"
-                                    data-page="<?php echo esc_attr($next_page); ?>"
-                                    data-title-id="<?php echo esc_attr($title_id); ?>"
-                                    data-search="<?php echo esc_attr($search); ?>"
-                                    data-per-page="<?php echo esc_attr($per_page); ?>"
-                                >
-                                    Next
-                                </a>
-                                <a
-                                    href="<?php echo esc_url(add_query_arg('page', $total_pages)); ?>"
-                                    class="page-btn"
-                                    data-page="<?php echo esc_attr($total_pages); ?>"
-                                    data-title-id="<?php echo esc_attr($title_id); ?>"
-                                    data-search="<?php echo esc_attr($search); ?>"
-                                    data-per-page="<?php echo esc_attr($per_page); ?>"
-                                >Last</a>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>           
+                    <div id="pagination-wrapper" class="pagination-wrapper">
+                        <?php echo comicbooks_issue_pagination_html(
+                            $title_id, $page, $total_pages, $search
+                        ); ?>
+                    </div>         
                 <?php endif; ?>
             </div>
         </section>
