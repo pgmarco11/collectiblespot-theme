@@ -1,0 +1,73 @@
+.tcs-membership-plans {
+    padding: clamp(1rem, 4vw, 1.5rem) 1rem;
+}
+
+.tcs-membership-plans .tcs-plan-grid,
+.tcs-membership-plans .tcs-plan-shared {
+    max-width: 56rem;
+    margin-inline: auto;
+}
+
+.tcs-plan-grid.is-layout-flex {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 1.5rem;
+}
+
+.tcs-membership-plans .tcs-plan-shared {
+    margin-block: 1.75rem 0;
+}
+
+.tcs-plan-card {
+    padding: clamp(1.25rem, 3vw, 2rem) !important; // Overrides p-3.
+    border: 2px solid var(--wp--preset--color--navy-blue, #002147);
+    border-radius: 15px;
+    box-shadow: 6px 6px 0 var(--wp--preset--color--navy-blue, #002147);
+}
+
+.tcs-plan-card--premium {
+    background-color: var(--wp--preset--color--background-light, #fef8f0);
+}
+
+.tcs-plan-card .btn-primary {
+    background-color: var(--wp--preset--color--primary, #005bbb);
+    border-color: var(--wp--preset--color--navy-blue, #002147);
+    color: #fff;
+}
+
+.tcs-plan-card .tcs-plan-features {
+    list-style: none;
+    padding-inline-start: 0;
+}
+
+.tcs-plan-features > li {
+    position: relative;
+    padding-inline-start: 1rem;
+}
+
+.tcs-plan-features > li + li {
+    margin-block-start: 0.4rem;
+}
+
+.tcs-plan-features > li::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0.5em;
+    width: 5px;
+    height: 5px;
+    border-radius: 1px;
+    background: var(--wp--preset--color--primary, #005bbb);
+}
+.tcs-plan-card .tcs-free-plan-button {
+    border-color: var(--wp--preset--color--navy-blue, #002147);
+    box-shadow: 2px 3px 0 var(--wp--preset--color--navy-blue, #002147);
+}
+
+@media (max-width: 767px) {
+    .tcs-plan-grid.is-layout-flex {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
+    }
+}

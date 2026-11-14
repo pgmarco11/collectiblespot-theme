@@ -71,3 +71,25 @@ function collectible_posts_shortcode($atts) {
     return $output;
 }
 add_shortcode('collectible_posts', 'collectible_posts_shortcode');
+
+add_shortcode('tcs_free_plan_action', static function (): string {
+    if (is_user_logged_in()) {
+        $url = home_url('/my-collection/');
+        $label = __('Back to My Collection', 'collectibles');
+    } else {
+        $url = home_url('/register/');
+        $label = __('Start Free', 'collectibles');
+    }
+
+    return sprintf(
+        '<div class="mt-auto pt-3 text-start"><a class="btn btn-primary tcs-free-plan-button" href="%s">%s</a></div>',
+        esc_url($url),
+        esc_html($label)
+    );
+});
+
+add_shortcode('tcs_premium_plan_action', static function (): string {
+    return '<p class="tcs-plan-status mt-auto pt-3 mb-0 fw-semibold text-start">'
+    . esc_html__('Premium coming soon', 'collectibles')
+    . '</p>';
+});

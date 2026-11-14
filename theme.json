@@ -6,19 +6,18 @@
     "color": {
       "defaultPalette": false,
       "palette": [
-        { "slug": "white", "color": "#ffffff", "name": "White" },
-        { "slug": "cream", "color": "#fef8f0", "name": "Soft Cream" },
+        { "slug": "white", "color": "#ffffff", "name": "White" },        
         { "slug": "black", "color": "#000000", "name": "Black" },
-        { "slug": "navy-blue", "color": "#002147", "name": "Navy Blue" },
-        { "slug": "royal-blue", "color": "#005bbb", "name": "Royal Blue" },
+        { "slug": "primary", "color": "#005bbb", "name": "Primary Royal Blue" },
+        { "slug": "secondary", "color": "#1e7dbc", "name": "Secondary Medium Blue" },
+        { "slug": "navy-blue", "color": "#002147", "name": "Navy Blue" },        
         { "slug": "sky-blue", "color": "#4da6ff", "name": "Sky Blue" },
+        { "slug": "blue-gray", "color": "#cbd7E2", "name": "Blue Gray" },
         { "slug": "deep-red", "color": "#d7263d", "name": "Deep Red" },
         { "slug": "golden-yellow", "color": "#ffc30b", "name": "Golden Yellow" },
         { "slug": "accent-orange", "color": "#ff7f11", "name": "Accent Orange" },
         { "slug": "background-light", "color": "#fef8f0", "name": "Light Cream Background" },
-        { "slug": "background-dark", "color": "#1a1a1a", "name": "Dark Background" },
-        { "slug": "primary", "color": "#005bbb", "name": "Primary Royal Blue" },
-        { "slug": "secondary", "color": "#1e7dbc", "name": "Secondary Medium Blue" }
+        { "slug": "background-dark", "color": "#1a1a1a", "name": "Dark Background" }
       ],
       "gradients": [
         {

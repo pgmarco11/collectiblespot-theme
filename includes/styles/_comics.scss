@@ -90,16 +90,16 @@
 .page-template-page-comic-issues {
   .page-section {
     .nav-tabs {
-      --bs-nav-tabs-border-color: var(--wp--preset--color--cream);
+      --bs-nav-tabs-border-color: var(--wp--preset--color--background-light);
       --bs-nav-tabs-link-active-color: var(--wp--preset--color--navy-blue);
-      --bs-nav-tabs-link-active-bg: var(--wp--preset--color--cream);
-      --bs-nav-tabs-link-active-border-color: var(--wp--preset--color--cream);
+      --bs-nav-tabs-link-active-bg: var(--wp--preset--color--background-light);
+      --bs-nav-tabs-link-active-border-color: var(--wp--preset--color--background-light);
 
       .nav-link {
         margin-right: 0.25rem;
         margin-bottom: 0;
         color: var(--wp--preset--color--white);
-        background-color: var(--wp--preset--color--royal-blue);
+        background-color: var(--wp--preset--color--primary);
 
         &:hover {
           text-decoration: underline;
@@ -125,7 +125,7 @@
     #catalog-owned-issues .issue-link:focus-visible {
       outline: 2px solid var(--wp--preset--color--navy-blue);
       outline-offset: 2px;
-      box-shadow: 0 0 0 2px var(--wp--preset--color--cream);
+      box-shadow: 0 0 0 2px var(--wp--preset--color--background-light);
     }
   }
 }

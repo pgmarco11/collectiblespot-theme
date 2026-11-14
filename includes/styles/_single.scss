@@ -80,7 +80,7 @@
             border: .15rem solid $text-color-black;
             box-shadow:
                 .5rem .5rem 0
-                var(--wp--preset--color--royal-blue);
+                var(--wp--preset--color--primary);
             display: grid;
             grid-template-columns: minmax(0, 1fr);
             isolation: isolate;
@@ -207,7 +207,7 @@
 
             /* Generic Buttons */        
             button {
-                background-color: var(--wp--preset--color--royal-blue) !important;
+                background-color: var(--wp--preset--color--primary) !important;
                 color: var(--wp--preset--color--white) !important;
                 font-size: var(--wp--preset--font-size--medium) !important;
             }            

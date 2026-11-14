@@ -91,3 +91,25 @@ add_filter('script_loader_tag', function ($tag, $handle, $src) {
 }, 10, 3);
 
 add_action('wp_enqueue_scripts', 'u_enqueue');
+
+add_action('wp_print_styles', static function (): void {
+    if (
+        !doing_action('wp_head')
+        || !wp_style_is('wp-block-custom-css', 'enqueued')
+        || wp_style_is('global-styles', 'registered')
+    ) {
+        return;
+    }
+
+    // Keep the registered CSS and defer it until its dependency is available.
+    wp_dequeue_style('wp-block-custom-css');
+
+    add_action('wp_footer', static function (): void {
+        if (
+            wp_style_is('wp-block-custom-css', 'registered')
+            && wp_style_is('global-styles', 'registered')
+        ) {
+            wp_enqueue_style('wp-block-custom-css');
+        }
+    }, 5);
+}, 100);

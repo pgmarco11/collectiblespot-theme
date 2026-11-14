@@ -52,6 +52,19 @@ $sidebar-width: 500px; // Added to define a consistent sidebar width
 }
 /* bootstrap end items */
 
+body.home {
+  .site-main {
+      .body-section {
+        .wp-block-column.is-vertically-aligned-center {
+            background-color: rgba(0, 0, 0, .3);
+            padding: 1rem 0;
+        }
+        .wp-block-group.is-layout-constrained.wp-block-group-is-layout-constrained {
+          padding: 4rem 0 0;
+        }
+    }
+  } 
+}
 body {
   margin: 0;
   padding: 0;
@@ -416,20 +429,14 @@ body {
       background-blend-mode: overlay;
 
       .wp-block-column.is-vertically-aligned-center {
-        background-color: rgba(0, 0, 0, .3);
-        padding: 0 0 4rem 0;
-
         h3.wp-block-heading  {          
           margin-block-start: 0 !important;
-          padding: 1em 2.375em .8em;
+          padding: 0.3rem 0 0.5rem;
         }  
       }
       .wp-block-columns.are-vertically-aligned-center {
         align-items: center !important;
         margin-bottom: 0;
-      }
-      .wp-block-group.is-layout-constrained.wp-block-group-is-layout-constrained {
-        padding: 4rem 0 0;
       }
       :where(.is-layout-flow) > :first-child {
         margin-block-start: 1px;
@@ -671,6 +678,7 @@ body {
 @import 'shortcodes';
 @import 'toastify';
 @import 'registration';
+@import 'membership';
 @import 'account';
 @import 'login';
 
