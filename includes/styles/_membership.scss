@@ -1,3 +1,15 @@
+.tcs-premium-checkout .tcs-premium-payment .btn-primary {
+    --bs-btn-color: #002044;
+    --bs-btn-bg: #ff851b;
+    --bs-btn-border-color: #ff851b;
+    --bs-btn-hover-color: #002044;
+    --bs-btn-hover-bg: #ff9c45;
+    --bs-btn-hover-border-color: #ff9c45;
+    --bs-btn-active-color: #002044;
+    --bs-btn-active-bg: #ff9c45;
+    --bs-btn-active-border-color: #ff9c45;
+}
+
 .tcs-membership-plans {
     padding: clamp(1rem, 4vw, 1.5rem) 1rem;
 }
