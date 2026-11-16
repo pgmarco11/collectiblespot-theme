@@ -77,6 +77,245 @@
     box-shadow: 2px 3px 0 var(--wp--preset--color--navy-blue, #002147);
 }
 
+.wp-block-columns.tcs-premium-checkout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    align-items: stretch !important;
+    gap: 0;
+    width: 100%;
+    max-width: 960px;
+    margin: 1.25rem auto 2rem;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    border-top: 5px solid #002044;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 6px 0 rgb(0 32 68 / 22%);
+}
+
+
+.tcs-premium-checkout > .wp-block-column {
+    align-self: stretch;
+    min-width: 0;
+    padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.tcs-premium-checkout .tcs-checkout-summary {
+    background: #fbf6ed;
+}
+
+.tcs-premium-checkout .tcs-checkout-payment {
+    background: #fff;
+}
+
+.tcs-checkout-payment .tcs-premium-payment {
+    display: block;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0 !important;
+}
+
+.tcs-checkout-payment .tcs-premium-payment__fields {
+    width: 100%;
+}
+
+.tcs-checkout-payment .tcs-premium-payment__status:empty,
+.tcs-checkout-payment .tcs-premium-payment__error:empty {
+    display: none;
+}
+
+.tcs-checkout-payment .tcs-premium-payment__total {
+    margin: 1rem 0;
+}
+
+/* Premium summary */
+.tcs-checkout-summary .tcs-premium-recurring-price {
+    color: #002044;
+    font-weight: 750;
+    line-height: 1.2;
+}
+
+.tcs-checkout-summary .tcs-plan-features {
+    padding-inline-start: 1.15rem;
+    list-style: disc outside;
+    line-height: 1.5;
+}
+
+/* Keep one marker per feature. */
+.tcs-checkout-summary .tcs-plan-features li::before {
+    content: none;
+}
+
+.tcs-checkout-summary .tcs-plan-features li {
+    padding-inline-start: 0;
+}
+
+.tcs-checkout-summary .tcs-plan-features li::marker {
+    color: #0059b3;
+}
+
+/* Payment heading and footer */
+.tcs-checkout-payment .tcs-checkout-payment-heading {
+    margin: 1rem 0 0;
+    color: #002044;
+    font-family: var(--wp--preset--font-family--lato);
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+}
+
+.tcs-checkout-payment .tcs-premium-payment__total:not([hidden]) {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 1.25rem 0 .875rem;
+    padding-top: .875rem;
+    border-top: 1px solid #cbd5e1;
+    color: #002044;
+}
+
+.tcs-checkout-payment .tcs-premium-payment__total span {
+    font-size: 1.25rem;
+    white-space: nowrap;
+}
+
+.tcs-checkout-payment .tcs-premium-payment button[type="submit"] {
+    --bs-btn-color: #002044;
+    --bs-btn-bg: #ff851b;
+    --bs-btn-border-color: #ff851b;
+    --bs-btn-hover-color: #002044;
+    --bs-btn-hover-bg: #ff9c45;
+    --bs-btn-hover-border-color: #ff9c45;
+    --bs-btn-active-color: #002044;
+    --bs-btn-active-bg: #f4770c;
+    --bs-btn-active-border-color: #f4770c;
+    --bs-btn-disabled-color: #5c4227;
+    --bs-btn-disabled-bg: #ffe0b8;
+    --bs-btn-disabled-border-color: #ffe0b8;
+    --bs-btn-disabled-opacity: 1;
+
+    min-height: 46px;
+    border-radius: 7px;
+    font-weight: 700;
+}
+
+/* Premium feature list */
+.tcs-checkout-summary .tcs-plan-features {
+    list-style: none;
+    padding-inline-start: 0;
+    margin-block: 1.25rem 1rem;
+}
+
+.tcs-checkout-summary .tcs-plan-features li {
+    position: relative;
+    padding-inline-start: 1.65rem;
+    line-height: 1.45;
+}
+
+.tcs-checkout-summary .tcs-plan-features li + li {
+    margin-block-start: .55rem;
+}
+
+/* Pale blue circle */
+.tcs-checkout-summary .tcs-plan-features li::before {
+    content: "";
+    position: absolute;
+    inset-block-start: .2em;
+    inset-inline-start: 0;
+    inline-size: 1rem;
+    block-size: 1rem;
+    border-radius: 50%;
+    background: #dfeaf7;
+}
+
+/* Blue checkmark */
+.tcs-checkout-summary .tcs-plan-features li::after {
+    content: "";
+    position: absolute;
+    inset-block-start: calc(.2em + 3px);
+    inset-inline-start: 6px;
+    inline-size: 4px;
+    block-size: 8px;
+    border: solid #0054a6;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Membership plans link */
+.tcs-checkout-summary .tcs-checkout-back {
+    margin-block: 1rem 0;
+    font-size: .9375rem;
+    font-weight: 600;
+}
+
+.tcs-checkout-summary .tcs-checkout-back a {
+    color: #0054a6;
+    text-decoration: underline;
+    text-underline-offset: .2em;
+}
+
+/* Stripe note below the subscribe button */
+.tcs-checkout-payment .tcs-checkout-stripe-note {
+    margin-block: .75rem 0;
+    color: #435a73;
+    font-size: .8125rem;
+    line-height: 1.4;
+    text-align: center;
+}
+.tcs-checkout-payment .tcs-checkout-stripe-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+}
+
+.tcs-checkout-lock {
+    position: relative;
+    flex: 0 0 auto;
+    width: 11px;
+    height: 8px;
+    margin-top: 4px;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+}
+
+.tcs-checkout-lock::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    width: 7px;
+    height: 6px;
+    border: 1px solid currentColor;
+    border-bottom: 0;
+    border-radius: 5px 5px 0 0;
+    transform: translateX(-50%);
+}
+
+.tcs-checkout-payment .tcs-checkout-paypal {
+    margin-block-start: 1rem;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid #cbd5e1;
+}
+
+.tcs-checkout-payment .tcs-checkout-paypal .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    border-radius: 7px;
+    font-weight: 600;
+}
+
+@media (max-width: 781px) {
+    .wp-block-columns.tcs-premium-checkout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tcs-premium-checkout .tcs-checkout-summary {
+        border-bottom: 1px solid #cbd5e1;
+    }
+}
+
 @media (max-width: 767px) {
     .tcs-plan-grid.is-layout-flex {
         grid-template-columns: minmax(0, 1fr);

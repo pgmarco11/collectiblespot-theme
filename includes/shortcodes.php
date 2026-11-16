@@ -89,7 +89,19 @@ add_shortcode('tcs_free_plan_action', static function (): string {
 });
 
 add_shortcode('tcs_premium_plan_action', static function (): string {
-    return '<p class="tcs-plan-status mt-auto pt-3 mb-0 fw-semibold text-start">'
-    . esc_html__('Premium coming soon', 'collectibles')
-    . '</p>';
+    $checkout_url = home_url('/premium-checkout/');
+
+    if (is_user_logged_in()) {
+        $url = $checkout_url;
+        $label = __('Upgrade to Premium', 'collectibles');
+    } else {
+        $url = wp_login_url($checkout_url);
+        $label = __('Sign In to Upgrade', 'collectibles');
+    }
+
+    return sprintf(
+        '<div class="mt-auto pt-3 text-start"><a class="btn btn-primary" href="%s">%s</a></div>',
+        esc_url($url),
+        esc_html($label)
+    );
 });
