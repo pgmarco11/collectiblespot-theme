@@ -140,3 +140,15 @@ add_action('template_redirect', static function () {
     }
     $GLOBALS['tcs_login_page_state'] = $state;
 });
+
+add_filter('login_redirect', static function ($redirect_to, $requested_redirect_to, $user) {
+    if (
+        $user instanceof WP_User
+        && get_user_meta($user->ID, '_tcs_needs_plan_choice', true) === '1'
+        && !get_user_meta($user->ID, '_tcs_email_pending', true)
+    ) {
+        return home_url('/choose-plan/');
+    }
+
+    return $redirect_to;
+}, 99, 3);

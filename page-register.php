@@ -155,7 +155,10 @@ if (
             'user_email' => $email,
             'user_pass'  => $password,
             'role'       => 'subscriber',
-            'meta_input' => ['_tcs_email_pending' => '1'],
+            'meta_input' => [
+                '_tcs_email_pending'     => '1',
+                '_tcs_needs_plan_choice' => '1',
+            ],
         ]);
 
         if (is_wp_error($user_id)) {

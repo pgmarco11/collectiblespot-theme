@@ -105,3 +105,60 @@ add_shortcode('tcs_premium_plan_action', static function (): string {
         esc_html($label)
     );
 });
+
+add_shortcode('tcs_choose_free_plan', static function (): string {
+    if (!is_user_logged_in()) {
+        return '';
+    }
+
+    return sprintf(
+        '<form method="post" action="%s">
+            <input type="hidden" name="tcs_plan_action" value="choose_free">
+            %s
+            <button type="submit" class="btn btn-primary">%s</button>
+        </form>',
+        esc_url(home_url('/choose-plan/')),
+        wp_nonce_field('tcs_choose_free_plan', 'tcs_choose_plan_nonce', false, false),
+        esc_html__('Continue with Free', 'collectibles')
+    );
+});
+
+add_action('template_redirect', static function (): void {
+    if (!is_page('choose-plan')) {
+        return;
+    }
+
+    nocache_headers();
+
+    if (!is_user_logged_in()) {
+        wp_safe_redirect(wp_login_url(home_url('/choose-plan/')));
+        exit;
+    }
+
+    if (
+        ($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST'
+        || ($_POST['tcs_plan_action'] ?? '') !== 'choose_free'
+    ) {
+        return;
+    }
+
+    $user_id = get_current_user_id();
+    $nonce = $_POST['tcs_choose_plan_nonce'] ?? '';
+
+    if (
+        get_user_meta($user_id, '_tcs_email_pending', true)
+        || !is_string($nonce)
+        || !wp_verify_nonce(wp_unslash($nonce), 'tcs_choose_free_plan')
+    ) {
+        wp_die(
+            esc_html__('Verify your email and reload the Choose a Plan page to try again.', 'collectibles'),
+            '',
+            ['response' => 403]
+        );
+    }
+
+    delete_user_meta($user_id, '_tcs_needs_plan_choice');
+
+    wp_safe_redirect(home_url('/my-collection/'), 303);
+    exit;
+});
