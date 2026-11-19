@@ -89,6 +89,18 @@ add_shortcode('tcs_free_plan_action', static function (): string {
 });
 
 add_shortcode('tcs_premium_plan_action', static function (): string {
+
+    if (
+        is_user_logged_in()
+        && tcs_user_has_premium(get_current_user_id())
+    ) {
+        return sprintf(
+            '<div class="mt-auto pt-3 text-start"><a class="btn btn-primary" href="%s">%s</a></div>',
+            esc_url(home_url('/manage-membership/')),
+            esc_html__('Manage Membership', 'collectibles')
+        );
+    }
+    
     $checkout_url = home_url('/premium-checkout/');
 
     if (is_user_logged_in()) {
@@ -107,6 +119,7 @@ add_shortcode('tcs_premium_plan_action', static function (): string {
 });
 
 add_shortcode('tcs_choose_free_plan', static function (): string {
+    
     if (!is_user_logged_in()) {
         return '';
     }
